@@ -1,0 +1,17 @@
+{:objects
+ {:Recipe
+  {:description "A meal that can be made"
+   :fields
+   {:id {:type (non-null ID)}
+    :name {:type (non-null String)}
+    :description {:type String
+                  :description "A markdown description or instructions."}
+    :image {:type String
+            :description "A preview image of the recipe."}}}}
+ :queries
+ {:recipe_by_id
+  {:type :Recipe
+   :description "Access a recipe by it's unique id, if it exists"
+   :args
+   {:id {:type ID}}
+   :resolve :query/recipe-by-id}}}
