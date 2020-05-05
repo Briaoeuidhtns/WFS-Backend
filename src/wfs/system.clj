@@ -1,8 +1,8 @@
 (ns wfs.system
   (:require
    [com.stuartsierra.component :as component]
-   [clojure-game-geek.schema :as schema]
-   [clojure-game-geek.server :as server]))
+   [wfs.schema :as schema]
+   [wfs.server :as server]))
 
 (defn new-system
   []

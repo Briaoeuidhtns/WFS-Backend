@@ -1,11 +1,13 @@
 (ns user
   (:require
    [wfs.schema :as s]
+   [wfs.system :as system]
    [com.walmartlabs.lacinia :as lacinia]
    [com.walmartlabs.lacinia.pedestal :as lp]
    [io.pedestal.http :as http]
    [clojure.java.browse :refer [browse-url]]
-   [clojure.walk :as walk])
+   [clojure.walk :as walk]
+   [com.stuartsierra.component :as component])
   (:import (clojure.lang IPersistentMap)))
 
 (defn simplify

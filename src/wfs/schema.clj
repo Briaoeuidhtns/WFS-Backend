@@ -12,7 +12,7 @@
   (let [{:keys [id]} args]
     (recipes-map id)))
 
-(defn resolver-map []
+(defn resolver-map
   [component]
   (let [dummy-data (-> (io/resource "dummy-data.edn")
                        slurp
@@ -22,7 +22,7 @@
                          (reduce #(assoc %1 (:id %2) %2) {}))]
     {:query/recipe-by-id (partial resolve-recipe-by-id recipes-map)}))
 
-(defn load-schema []
+(defn load-schema
   [component]
   (-> (io/resource "wfs-schema.edn")
       slurp
