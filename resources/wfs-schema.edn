@@ -1,17 +1,50 @@
 {:objects
  {:Recipe
-  {:description "A meal that can be made"
+  {:description "A meal that can be made."
    :fields
    {:id {:type (non-null ID)}
     :name {:type (non-null String)}
     :description {:type String
                   :description "A markdown description or instructions."}
     :image {:type String
-            :description "A preview image of the recipe."}}}}
+            :description "A preview image of the recipe."}}}
+
+  :User
+  {:description "A user of the wfs app."
+   :fields
+   {:id {:type (non-null ID)}
+    :name {:type (non-null String)}
+    :recipes {:type (non-null (list (non-null :Recipe)))
+              :description "Recipes in this user's library."
+              :resolve :User/recipes}}}
+
+  :Session
+  {:description "A recipe selection session between users"
+   :fields
+   {:id {:type (non-null ID)}
+    :users {:type (non-null (list (non-null :User)))
+            :resolve :Session/users
+            :description "The users participating in the session currently. Sessions are removed when there are fewer than 1 users."}
+    :expires {:type (non-null String)
+              :description "A serialized java.time Instant"}}}}
+
  :queries
  {:recipe_by_id
   {:type :Recipe
-   :description "Access a recipe by it's unique id, if it exists"
+   :description "Access a recipe by it's unique id, if it exists."
    :args
    {:id {:type ID}}
-   :resolve :query/recipe-by-id}}}
+   :resolve :query/recipe-by-id}}
+
+ :user_by_id
+ {:type :User
+  :description "Select a user by their unique id, if they exist."
+  :args
+  {:id {:type (non-null ID)}}
+  :resolve :query/user-by-id}
+
+ :session_by_user
+ {:type (non-null (list (non-null :Session)))
+  :description "Get sessions that a user is able to participate in."
+  :args
+  {:user {:type (non-null :User)}}}}
