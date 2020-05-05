@@ -7,23 +7,24 @@ on:
     branches: [ master ]
     
 jobs:
-  test:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Run tests
-      run: clj -Atest
-
   build:
     runs-on: ubuntu-latest
+    
     steps:
-    - uses: actions/checkout@v2
-    - name: build
-      run: clj -Anative
-    - uses: actions/upload-artifact@v2
-      with:
-        name: binary
-        path: target/backend/*.jar
-    
-    
+      - uses: actions/checkout@v2
+
+      - name: Install clojure tools
+        uses: DeLaGuardo/setup-clojure@master
+        with:
+          tools-deps: latest
+
+      - name: Run tests
+        run: clj -Atest
+
+      - name: build
+        run: clj -Auberjar
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: uberjar
+          path: target/backend*.jar
