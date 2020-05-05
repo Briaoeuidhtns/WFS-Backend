@@ -19,10 +19,10 @@ jobs:
           tools-deps: latest
 
       - name: Run tests
-        run: clj -Atest
+        run: clojure -Atest
 
       - name: build
-        run: clj -Auberjar
+        run: clojure -Auberjar
 
       - uses: actions/upload-artifact@v2
         with:
