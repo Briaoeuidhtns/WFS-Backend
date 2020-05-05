@@ -20,10 +20,14 @@ jobs:
 
       - name: Run tests
         run: clojure -Atest
+      - uses: actions/upload-artifact@v2
+        with:
+          name: coverage
+          path: target/coverage/index.html
 
       - name: build
         run: clojure -Auberjar
-
+        
       - uses: actions/upload-artifact@v2
         with:
           name: uberjar
