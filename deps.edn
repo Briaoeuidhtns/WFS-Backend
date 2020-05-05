@@ -17,6 +17,6 @@
   :add
   {:extra-deps
    {find-deps
-    {:git/url "https://github.com/hagmonk/find-deps.git",
-     :sha "9bf23a52cb0a8190c9c2c7ad1d796da802f8ce7a"}},
+    {:git/url "https://github.com/holyjak/find-deps.git",
+     :sha "88d60faf0db23cf4e2f8155ca82ae49fc6dea164"}},
    :main-opts ["-m" "find-deps.core" "-Fsave"]}}}
