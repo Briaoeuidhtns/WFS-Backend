@@ -3,7 +3,8 @@
  {org.clojure/clojure {:mvn/version "1.10.1"},
   com.walmartlabs/lacinia-pedestal {:mvn/version "0.13.0"},
   com.stuartsierra/component {:mvn/version "1.0.0"},
-  io.aviso/logging {:mvn/version "0.3.2"}},
+  io.aviso/logging {:mvn/version "0.3.2"},
+  tick {:mvn/version "0.4.23-alpha"}},
  :mvn/repos
  {"central" {:url "https://repo1.maven.org/maven2/"},
   "clojars" {:url "https://repo.clojars.org/"}},

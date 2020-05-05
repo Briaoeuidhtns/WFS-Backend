@@ -2,10 +2,11 @@
   (:require
    [wfs.schema :as s]
    [com.walmartlabs.lacinia :as lacinia]
+   [com.walmartlabs.lacinia.pedestal :as lp]
+   [io.pedestal.http :as http]
+   [clojure.java.browse :refer [browse-url]]
    [clojure.walk :as walk])
   (:import (clojure.lang IPersistentMap)))
-
-(def schema (s/load-schema))
 
 (defn simplify
   "Converts all ordered maps nested within the map into standard hash maps, and
@@ -24,7 +25,23 @@
        node))
    m))
 
+(defonce system (system/new-system))
+
 (defn q
   [query-string]
-  (-> (lacinia/execute schema query-string nil nil)
+  (-> system
+      :schema-provider
+      :schema
+      (lacinia/execute query-string nil nil)
       simplify))
+
+(defn start
+  []
+  (alter-var-root #'system component/start-system)
+  (browse-url "http://localhost:8888/")
+  :started)
+
+(defn stop
+  []
+  (alter-var-root #'system component/stop-system)
+  :stopped)
