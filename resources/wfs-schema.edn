@@ -16,7 +16,9 @@
     :name {:type (non-null String)}
     :recipes {:type (non-null (list (non-null :Recipe)))
               :description "Recipes in this user's library."
-              :resolve :User/recipes}}}
+              :resolve :User/recipes}
+    :sessions {:type (non-null (list (non-null :Session)))
+               :description "A list of the sessions in which the user is currently able to participate."}}}
 
   :Session
   {:description "A recipe selection session between users"
@@ -24,16 +26,43 @@
    {:id {:type (non-null ID)}
     :users {:type (non-null (list (non-null :User)))
             :resolve :Session/users
-            :description "The users participating in the session currently. Sessions are removed when there are fewer than 1 users."}
+            :description "The users participating in the session currently."}
     :expires {:type (non-null String)
-              :description "A serialized java.time Instant"}}}}
+              :description "The serialized java.time Instant when this session will expire."}
+    :recipes_connection {:type (non-null :RecipesConnection)
+                         :resolve :Session/recipes_connection
+                         :args
+                         {:first {:type (non-null Int)
+                                  :description "The number of recipes to return at most."}
+                          :after {:type String
+                                  :description "A cursor to the last recipe before the recipes desired."}}}}}
+
+  :RecipesConnection {:description "A Connection to a list of recipes in a session."
+                      :fields
+                      {:page_info (non-null :PageInfo)
+                       :edges (non-null (list (non-null :Edge)))}}
+
+  :RecipeEdge {:fields
+               {:node {:type (non-null :Recipe)}
+                :cursor {:type String}
+                :liked_by {:type (non-null (list (non-null :User)))}
+                :disliked_by {:type (non-null (list (non-null :User)))}}}
+
+  :PageInfo {:fields
+             {:has_previous_page {:type (non-null Boolean)}
+              :has_next_page {:type (non-null Boolean)
+                              :description "There is a page available after this page."}
+              :start_cursor {:type (non-null Boolean)
+                             :description "A cursor to the first edge of this page."}
+              :end_cursor {:type (non-null Boolean)
+                           :description "A cursor to the last edge of this page."}}}}
 
  :queries
  {:recipe_by_id
   {:type :Recipe
    :description "Access a recipe by it's unique id, if it exists."
    :args
-   {:id {:type ID}}
+   {:id {:type (non-null ID)}}
    :resolve :query/recipe-by-id}}
 
  :user_by_id
@@ -43,8 +72,9 @@
   {:id {:type (non-null ID)}}
   :resolve :query/user-by-id}
 
- :session_by_user
- {:type (non-null (list (non-null :Session)))
-  :description "Get sessions that a user is able to participate in."
+ :session_by_id
+ {:type :Session
+  :description "Select a Session by it's unique id, if it exists."
   :args
-  {:user {:type (non-null :User)}}}}
+  {:id {:type (non-null ID)}}
+  :resolve :query/session-by-id}}
