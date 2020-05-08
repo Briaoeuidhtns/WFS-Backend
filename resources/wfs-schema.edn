@@ -39,8 +39,8 @@
 
   :RecipesConnection {:description "A Connection to a list of recipes in a session."
                       :fields
-                      {:page_info (non-null :PageInfo)
-                       :edges (non-null (list (non-null :Edge)))}}
+                      {:page_info {:type (non-null :PageInfo)}
+                       :edges {:type (non-null (list (non-null :RecipeEdge)))}}}
 
   :RecipeEdge {:fields
                {:node {:type (non-null :Recipe)}
@@ -63,7 +63,7 @@
    :description "Access a recipe by it's unique id, if it exists."
    :args
    {:id {:type (non-null ID)}}
-   :resolve :query/recipe-by-id}}
+   :resolve :query/recipe-by-id}
 
  :user_by_id
  {:type :User
@@ -77,4 +77,4 @@
   :description "Select a Session by it's unique id, if it exists."
   :args
   {:id {:type (non-null ID)}}
-  :resolve :query/session-by-id}}
+  :resolve :query/session-by-id}}}
