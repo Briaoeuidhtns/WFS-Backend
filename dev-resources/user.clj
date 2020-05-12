@@ -2,7 +2,7 @@
   (:require
    [wfs.schema :as s]
    [wfs.system :as system]
-   [wfs.db :as db]
+   [wfs.db.query :as db]
    [com.walmartlabs.lacinia :as lacinia]
    [com.walmartlabs.lacinia.pedestal :as lp]
    [io.pedestal.http :as http]
