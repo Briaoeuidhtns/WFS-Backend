@@ -9,8 +9,7 @@
    [wfs.db :as db]
    [clojure.walk :refer [postwalk]]
    [wfs.base64 :refer [b64->str str->b64]]
-   [taoensso.timbre :as t])
-  (:import (java.io StringReader)))
+   [taoensso.timbre :as t]))
 
 (defn unqualified
   "me irl"
