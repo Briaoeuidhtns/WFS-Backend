@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+CAUTION: Do not modify this file unless you know what you are doing.
+         Unexpected results may occur if the code is changed deliberately.
+-->
+<dbmodel pgmodeler-ver="0.9.2" last-position="0,0" last-zoom="1" max-obj-count="4"
+	 default-schema="public" default-owner="postgres">
+<database name="wfs" encoding="UTF8" lc-collate="en_US.utf8" lc-ctype="en_US.utf8" is-template="false" allow-conns="true">
+	<role name="postgres"/>
+	<tablespace name="pg_default"/>
+</database>
+
+<schema name="public" layer="0" fill-color="#e1e1e1" sql-disabled="true">
+</schema>
+
+<function name="mantain_updated_at"
+		window-func="false"
+		returns-setof="false"
+		behavior-type="CALLED ON NULL INPUT"
+		function-type="VOLATILE"
+		security-type="SECURITY INVOKER"
+		execution-cost="100"
+		row-amount="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<language name="plpgsql" sql-disabled="true"/>
+	<return-type>
+	<type name="trigger" length="1"/>
+	</return-type>
+	<definition><![CDATA[
+BEGIN
+   NEW.updated_at = now();
+   RETURN NEW;
+END;
+]]></definition>
+</function>
+
+<table name="registered_user" layer="0" collapse-mode="2" max-obj-count="4">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="60" y="80"/>
+	<column name="user_id" not-null="true"
+	 identity-type="ALWAYS">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="created_at" not-null="true" default-value="CURRENT_TIMESTAMP">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="updated_at" not-null="true" default-value="CURRENT_TIMESTAMP">
+		<type name="timestamp" length="0"/>
+	</column>
+	<constraint name="member_pkey" type="pk-constr" table="public.registered_user">
+		<columns names="user_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="member_member_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1" sql-disabled="true">
+	<schema name="public"/>
+	<role name="postgres"/>
+</sequence>
+
+<trigger name="user_updated_at" firing-type="BEFORE" per-line="true" constraint="false"
+	 ins-event="false" del-event="false" upd-event="true" trunc-event="false"
+	 table="public.registered_user">
+		<function signature="public.mantain_updated_at()"/>
+</trigger>
+
+<sequence name="board_game_game_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1" sql-disabled="true">
+	<schema name="public"/>
+	<role name="postgres"/>
+</sequence>
+
+<sequence name="designer_designer_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1" sql-disabled="true">
+	<schema name="public"/>
+	<role name="postgres"/>
+</sequence>
+
+<table name="session" layer="0" collapse-mode="2" max-obj-count="3">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="420" y="400"/>
+	<column name="session_id" not-null="true"
+	 identity-type="ALWAYS">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="created_at" not-null="true" default-value="CURRENT_TIMESTAMP">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="updated_at" not-null="true" default-value="CURRENT_TIMESTAMP">
+		<type name="timestamp" length="0"/>
+	</column>
+	<constraint name="session_pk" type="pk-constr" table="public.session">
+		<columns names="session_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<trigger name="session_updated_at" firing-type="BEFORE" per-line="true" constraint="false"
+	 ins-event="false" del-event="false" upd-event="true" trunc-event="false"
+	 table="public.session">
+		<function signature="public.mantain_updated_at()"/>
+</trigger>
+
+<table name="recipe" layer="0" collapse-mode="2" max-obj-count="7">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="560" y="80"/>
+	<column name="recipe_id" not-null="true"
+	 identity-type="ALWAYS">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="description">
+		<type name="text" length="0"/>
+	</column>
+	<column name="image">
+		<type name="bytea" length="0"/>
+	</column>
+	<column name="created_at" not-null="true" default-value="CURRENT_TIMESTAMP">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="updated_at" not-null="true" default-value="CURRENT_TIMESTAMP">
+		<type name="timestamp" length="0"/>
+	</column>
+	<constraint name="recipe_pkey" type="pk-constr" table="public.recipe">
+		<columns names="recipe_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<trigger name="recipe_updated_at" firing-type="BEFORE" per-line="true" constraint="false"
+	 ins-event="false" del-event="false" upd-event="true" trunc-event="false"
+	 table="public.recipe">
+		<function signature="public.mantain_updated_at()"/>
+</trigger>
+
+<relationship name="recipe_shared_with" type="relnn" layer="0"
+	 src-col-pattern="{sc}_{st}" dst-col-pattern="{sc}_{dt}"
+	 pk-pattern="{gt}_pk" uq-pattern="{gt}_uq"
+	 src-fk-pattern="{st}_fk" dst-fk-pattern="{dt}_fk"
+	 pk-col-pattern="id"
+	 custom-color="#08e96c"
+	 src-table="public.registered_user"
+	 dst-table="public.recipe"
+	 src-required="false" dst-required="false"
+	 table-name="many_user_has_many_recipe">
+	<label ref-type="name-label">
+		<position x="-16.7471" y="10.1027"/>
+	</label>
+	<column name="can_edit" not-null="true" default-value="FALSE">
+		<type name="boolean" length="0"/>
+	</column>
+	<column name="rating">
+		<type name="smallint" length="0"/>
+	</column>
+</relationship>
+
+<relationship name="user_participating_in_session" type="relnn" layer="0"
+	 src-col-pattern="{sc}_{st}" dst-col-pattern="{sc}_{dt}"
+	 pk-pattern="{gt}_pk" uq-pattern="{gt}_uq"
+	 src-fk-pattern="{st}_fk" dst-fk-pattern="{dt}_fk"
+	 pk-col-pattern="id"
+	 custom-color="#09edd4"
+	 src-table="public.session"
+	 dst-table="public.registered_user"
+	 src-required="false" dst-required="false"
+	 table-name="many_session_has_many_user">
+	<label ref-type="name-label">
+		<position x="153.921" y="4.74395"/>
+	</label>
+	<column name="joined_at" not-null="true" default-value="CURRENT_TIMESTAMP">
+		<type name="timestamp" length="0"/>
+	</column>
+	<special-pk-cols indexes="0"/>
+</relationship>
+
+</dbmodel>

@@ -1,10 +1,15 @@
 {:paths ["src" "resources"],
  :deps
  {org.clojure/clojure {:mvn/version "1.10.1"},
+  com.zaxxer/HikariCP {:mvn/version "3.4.5"},
   com.walmartlabs/lacinia-pedestal {:mvn/version "0.13.0"},
+  tick {:mvn/version "0.4.23-alpha"},
+  honeysql/honeysql {:mvn/version "0.9.10"},
   com.stuartsierra/component {:mvn/version "1.0.0"},
-  io.aviso/logging {:mvn/version "0.3.2"},
-  tick {:mvn/version "0.4.23-alpha"}},
+  nilenso/honeysql-postgres {:mvn/version "0.2.6"},
+  seancorfield/next.jdbc {:mvn/version "1.0.424"},
+  com.taoensso/timbre {:mvn/version "4.11.0-alpha1"},
+  com.impossibl.pgjdbc-ng/pgjdbc-ng {:mvn/version "0.8.4"}},
  :mvn/repos
  {"central" {:url "https://repo1.maven.org/maven2/"},
   "clojars" {:url "https://repo.clojars.org/"}},

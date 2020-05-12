@@ -2,12 +2,19 @@
   (:require
    [wfs.schema :as s]
    [wfs.system :as system]
+   [wfs.db :as db]
    [com.walmartlabs.lacinia :as lacinia]
    [com.walmartlabs.lacinia.pedestal :as lp]
    [io.pedestal.http :as http]
    [clojure.java.browse :refer [browse-url]]
    [clojure.walk :as walk]
-   [com.stuartsierra.component :as component])
+   [com.stuartsierra.component :as component]
+   [next.jdbc :as jdbc]
+   [next.jdbc.specs :as specs]
+   [honeysql.core :as sql]
+   [honeysql.helpers :as h]
+   [honeysql-postgres.format :refer :all]
+   [honeysql-postgres.helpers :as psqlh])
   (:import (clojure.lang IPersistentMap)))
 
 (defn simplify
@@ -37,13 +44,15 @@
       (lacinia/execute query-string nil nil)
       simplify))
 
-(defn start
+(defn start!
   []
   (alter-var-root #'system component/start-system)
   (browse-url "http://localhost:8888/")
   :started)
 
-(defn stop
+(defn stop!
   []
   (alter-var-root #'system component/stop-system)
   :stopped)
+
+(specs/instrument)
