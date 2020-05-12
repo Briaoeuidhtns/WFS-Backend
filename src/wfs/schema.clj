@@ -19,31 +19,32 @@
 (defn recipe-by-id
   [db]
   (fn [_ {:keys [id]} _]
-    (unqualified (q/recipe-by-id db id))))
+    (q/recipe-by-id db id)))
 
 (defn session-by-id
   [db]
   (fn [_ {:keys [id]} _]
-    (unqualified (q/session-by-id db id))))
+    (q/session-by-id db id)))
 
 (defn user-by-id
   [db]
   (fn [_ {:keys [id]} _]
-    (unqualified (q/user-by-id db id))))
+    (q/user-by-id db id)))
 
 (defn User->recipes
   [db]
-  (fn [_ _ user] []))
+  (fn [_ _ user]
+    (q/recipes-by-user db user)))
 
 (defn User->sessions
   [db]
   (fn [_ _ user]
-    (unqualified (q/session-by-user db user))))
+    (q/sessions-by-user db user)))
 
 (defn Session->users
   [db]
   (fn [_ _ session]
-    []))
+    (q/users-by-session db session)))
 
 (defn resolver-map
   [{:keys [db]}]

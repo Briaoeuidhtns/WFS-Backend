@@ -2,6 +2,7 @@
   (:require
    [com.stuartsierra.component :as component]
    [next.jdbc :as jdbc]
+   [next.jdbc.result-set :as result-set]
    [honeysql.core :as sql]
    [honeysql.helpers :refer [] :as helpers]
    [honeysql-postgres.format :refer :all]
@@ -9,43 +10,71 @@
    [taoensso.timbre :as t]
    [wfs.db.system :refer [sql-format]]))
 
-(defn user-by-id
-  [self user-id]
-  (->> {:select [[:registered_user/user_id :id]
-                 :registered_user/name]
-        :from [:registered_user]
-        :where [:= :registered_user/user_id user-id]}
-       sql-format
-       (jdbc/execute-one! (:ds self))))
+(def ^:private recipe-base {:select [[:recipe/recipe-id :id]
+                                     :recipe/name
+                                     :recipe/description
+                                     :recipe/image]
+                            :from [:recipe]})
+
+(def ^:private session-base {:select [[:session/session-id :id]
+                                      [(sql/call
+                                        :+ :session/updated-at (sql/inline "INTERVAL '1 hour'"))
+                                       :expires]]
+                             :from [:session]})
+
+(def ^:private user-base {:select [[:registered-user/user-id :id]
+                                   :registered-user/name]
+                          :from [:registered-user]})
+
+(def ^:private opts {:builder-fn result-set/as-unqualified-maps})
 
 (defn recipe-by-id
   [self recipe-id]
-  (->> {:select [[:recipe/recipe_id :id]
-                 :recipe/name
-                 :recipe/description
-                 :recipe/image]
-        :from [:recipe]
-        :where [:= :recipe/recipe_id recipe-id]}
-       sql-format
-       (jdbc/execute-one! (:ds self))))
+  (as-> recipe-base $
+    (sql/build $ :where [:= :recipe/recipe-id recipe-id])
+    (sql-format $)
+    (jdbc/execute-one! (:ds self) $ opts)))
 
 (defn session-by-id
   [self session-id]
-  (->> {:select [[:session/session_id :id]
-                 [(sql/call :+ :session/updated_at (sql/inline "INTERVAL '1 hour'")) :expires]]
-        :from [:session]
-        :where [:= :session/session_id session-id]}
-       sql-format
-       (jdbc/execute-one! (:ds self))))
+  (as-> session-base $
+    (sql/build $ :where [:= :session/session-id session-id])
+    (sql-format $)
+    (jdbc/execute-one! (:ds self) $ opts)))
 
-(defn session-by-user
+(defn user-by-id
+  [self user-id]
+  (as-> user-base $
+    (sql/build $ :where [:= :registered-user/user-id user-id])
+    (sql-format $)
+    (jdbc/execute-one! (:ds self) $ opts)))
+
+(defn recipes-by-user
   [self user]
-  (t/info user)
-  (->> {:select [[:session/session_id :id]
-                 [(sql/call :+ :session/updated_at (sql/inline "INTERVAL '1 hour'")) :expires]]
-        :from [:session]
-        :join [:many-session-has-many-user [:= :session/session_id :many-session-has-many-user/session_id_session]]
-        :where [:= :many-session-has-many-user/user_id_registered_user (:id user)]}
-       sql-format
-       (jdbc/execute! (:ds self))
-       (#(do (t/info %) %))))
+  (as-> recipe-base $
+    (sql/build $
+               :join [:many-user-has-many-recipe
+                      [:= :recipe/recipe-id :many-recipe-has-many-user/recipe-id-recipe]]
+               :where [:= :many-user-has-many-recipe/user-id-registered-user (:id user)])
+    (sql-format $)
+    (jdbc/execute! (:ds self) $ opts)))
+
+(defn sessions-by-user
+  [self user]
+  (as-> session-base $
+    (sql/build $
+               :join [:many-session-has-many-user
+                      [:= :session/session-id :many-session-has-many-user/session-id-session]]
+               :where [:= :many-session-has-many-user/user-id-registered-user (:id user)])
+    (sql-format $)
+    (jdbc/execute! (:ds self) $ opts)))
+
+(defn users-by-session
+  [self session]
+  (as-> user-base $
+        (sql/build $
+                   :join [:many-session-has-many-user
+                          [:= :registered-user/user-id :many-session-has-many-user/user-id-registered-user]]
+                   :where [:= :many-session-has-many-user/session-id-session (:id session)])
+    (sql-format $)
+    (jdbc/execute! (:ds self) $ opts)))
