@@ -3,7 +3,7 @@
    [com.stuartsierra.component :as component]
    [wfs.schema :as schema]
    [wfs.server :as server]
-   [wfs.db :as db]))
+   [wfs.db.system :as db]))
 
 (defn new-system
   []

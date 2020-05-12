@@ -35,10 +35,10 @@ END;
 ]]></definition>
 </function>
 
-<table name="user" layer="0" collapse-mode="2" max-obj-count="4">
+<table name="registered_user" layer="0" collapse-mode="2" max-obj-count="4">
 	<schema name="public"/>
 	<role name="postgres"/>
-	<position x="60" y="60"/>
+	<position x="60" y="80"/>
 	<column name="user_id" not-null="true"
 	 identity-type="ALWAYS">
 		<type name="integer" length="0"/>
@@ -52,7 +52,7 @@ END;
 	<column name="updated_at" not-null="true" default-value="CURRENT_TIMESTAMP">
 		<type name="timestamp" length="0"/>
 	</column>
-	<constraint name="member_pkey" type="pk-constr" table="public.&quot;user&quot;">
+	<constraint name="member_pkey" type="pk-constr" table="public.registered_user">
 		<columns names="user_id" ref-type="src-columns"/>
 	</constraint>
 </table>
@@ -64,7 +64,7 @@ END;
 
 <trigger name="user_updated_at" firing-type="BEFORE" per-line="true" constraint="false"
 	 ins-event="false" del-event="false" upd-event="true" trunc-event="false"
-	 table="public.&quot;user&quot;">
+	 table="public.registered_user">
 		<function signature="public.mantain_updated_at()"/>
 </trigger>
 
@@ -143,7 +143,7 @@ END;
 	 src-fk-pattern="{st}_fk" dst-fk-pattern="{dt}_fk"
 	 pk-col-pattern="id"
 	 custom-color="#08e96c"
-	 src-table="public.&quot;user&quot;"
+	 src-table="public.registered_user"
 	 dst-table="public.recipe"
 	 src-required="false" dst-required="false"
 	 table-name="many_user_has_many_recipe">
@@ -152,6 +152,9 @@ END;
 	</label>
 	<column name="can_edit" not-null="true" default-value="FALSE">
 		<type name="boolean" length="0"/>
+	</column>
+	<column name="rating">
+		<type name="smallint" length="0"/>
 	</column>
 </relationship>
 
@@ -162,11 +165,11 @@ END;
 	 pk-col-pattern="id"
 	 custom-color="#09edd4"
 	 src-table="public.session"
-	 dst-table="public.&quot;user&quot;"
+	 dst-table="public.registered_user"
 	 src-required="false" dst-required="false"
 	 table-name="many_session_has_many_user">
 	<label ref-type="name-label">
-		<position x="-45.7432" y="-5.25605"/>
+		<position x="153.921" y="4.74395"/>
 	</label>
 	<column name="joined_at" not-null="true" default-value="CURRENT_TIMESTAMP">
 		<type name="timestamp" length="0"/>
