@@ -6,7 +6,7 @@
    [com.walmartlabs.lacinia.schema :as schema]
    [com.stuartsierra.component :as component]
    [clojure.edn :as edn]
-   [wfs.db :as db]
+   [wfs.db.query :as q]
    [clojure.walk :refer [postwalk]]
    [wfs.base64 :refer [b64->str str->b64]]
    [taoensso.timbre :as t]))
@@ -19,17 +19,17 @@
 (defn recipe-by-id
   [db]
   (fn [_ {:keys [id]} _]
-    (unqualified (db/recipe-by-id db id))))
+    (unqualified (q/recipe-by-id db id))))
 
 (defn session-by-id
   [db]
   (fn [_ {:keys [id]} _]
-    (unqualified (db/session-by-id db id))))
+    (unqualified (q/session-by-id db id))))
 
 (defn user-by-id
   [db]
   (fn [_ {:keys [id]} _]
-    (unqualified (db/user-by-id db id))))
+    (unqualified (q/user-by-id db id))))
 
 (defn User->recipes
   [db]
@@ -38,7 +38,7 @@
 (defn User->sessions
   [db]
   (fn [_ _ user]
-    (unqualified (db/session-by-user db user))))
+    (unqualified (q/session-by-user db user))))
 
 (defn Session->users
   [db]
