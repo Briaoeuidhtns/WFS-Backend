@@ -1,80 +1,85 @@
 {:objects
  {:Recipe
-  {:description "A meal that can be made."
+  {:description "A meal that can be made.",
    :fields
-   {:id {:type (non-null ID)}
-    :name {:type (non-null String)}
-    :description {:type String
-                  :description "A markdown description or instructions."}
-    :image {:type String
-            :description "A preview image of the recipe."}}}
-
+   {:id {:type (non-null Int)},
+    :name {:type (non-null String)},
+    :description
+    {:type String, :description "A markdown description or instructions."},
+    :image {:type String, :description "A preview image of the recipe."}}},
   :User
-  {:description "A user of the wfs app."
+  {:description "A user of the wfs app.",
    :fields
-   {:id {:type (non-null ID)}
-    :name {:type (non-null String)}
-    :recipes {:type (non-null (list (non-null :Recipe)))
-              :description "Recipes in this user's library."
-              :resolve :User/recipes}
-    :sessions {:type (non-null (list (non-null :Session)))
-               :description "A list of the sessions in which the user is currently able to participate."}}}
-
+   {:id {:type (non-null Int)},
+    :name {:type (non-null String)},
+    :recipes
+    {:type (non-null (list (non-null :Recipe))),
+     :description "Recipes in this user's library.",
+     :resolve :User/recipes},
+    :sessions
+    {:type (non-null (list (non-null :Session))),
+     :description
+     "A list of the sessions in which the user is currently able to participate.",
+     :resolve :User/sessions}}},
   :Session
-  {:description "A recipe selection session between users"
+  {:description "A recipe selection session between users",
    :fields
-   {:id {:type (non-null ID)}
-    :users {:type (non-null (list (non-null :User)))
-            :resolve :Session/users
-            :description "The users participating in the session currently."}
-    :expires {:type (non-null String)
-              :description "The serialized java.time Instant when this session will expire."}
-    :recipes_connection {:type (non-null :RecipesConnection)
-                         :resolve :Session/recipes_connection
-                         :args
-                         {:first {:type (non-null Int)
-                                  :description "The number of recipes to return at most."}
-                          :after {:type String
-                                  :description "A cursor to the last recipe before the recipes desired."}}}}}
-
-  :RecipesConnection {:description "A Connection to a list of recipes in a session."
-                      :fields
-                      {:page_info {:type (non-null :PageInfo)}
-                       :edges {:type (non-null (list (non-null :RecipeEdge)))}}}
-
-  :RecipeEdge {:fields
-               {:node {:type (non-null :Recipe)}
-                :cursor {:type String}
-                :liked_by {:type (non-null (list (non-null :User)))}
-                :disliked_by {:type (non-null (list (non-null :User)))}}}
-
-  :PageInfo {:fields
-             {:has_previous_page {:type (non-null Boolean)}
-              :has_next_page {:type (non-null Boolean)
-                              :description "There is a page available after this page."}
-              :start_cursor {:type (non-null Boolean)
-                             :description "A cursor to the first edge of this page."}
-              :end_cursor {:type (non-null Boolean)
-                           :description "A cursor to the last edge of this page."}}}}
-
+   {:id {:type (non-null Int)},
+    :users
+    {:type (non-null (list (non-null :User))),
+     :resolve :Session/users,
+     :description "The users participating in the session currently."},
+    :expires
+    {:type (non-null String),
+     :description
+     "The serialized java.time Instant when this session will expire."},
+    :recipes_connection
+    {:type (non-null :RecipesConnection),
+     :resolve :Session/recipes_connection,
+     :args
+     {:first
+      {:type (non-null Int),
+       :description "The number of recipes to return at most."},
+      :after
+      {:type String,
+       :description
+       "A cursor to the last recipe before the recipes desired."}}}}},
+  :RecipesConnection
+  {:description "A Connection to a list of recipes in a session.",
+   :fields
+   {:page_info {:type (non-null :PageInfo)},
+    :edges {:type (non-null (list (non-null :RecipeEdge)))}}},
+  :RecipeEdge
+  {:fields
+   {:node {:type (non-null :Recipe)},
+    :cursor {:type String},
+    :liked_by {:type (non-null (list (non-null :User)))},
+    :disliked_by {:type (non-null (list (non-null :User)))}}},
+  :PageInfo
+  {:fields
+   {:has_previous_page {:type (non-null Boolean)},
+    :has_next_page
+    {:type (non-null Boolean),
+     :description "There is a page available after this page."},
+    :start_cursor
+    {:type (non-null ID),
+     :description "A cursor to the first edge of this page."},
+    :end_cursor
+    {:type (non-null ID),
+     :description "A cursor to the last edge of this page."}}}},
  :queries
  {:recipe_by_id
-  {:type :Recipe
-   :description "Access a recipe by it's unique id, if it exists."
-   :args
-   {:id {:type (non-null ID)}}
-   :resolve :query/recipe-by-id}
-
- :user_by_id
- {:type :User
-  :description "Select a user by their unique id, if they exist."
-  :args
-  {:id {:type (non-null ID)}}
-  :resolve :query/user-by-id}
-
- :session_by_id
- {:type :Session
-  :description "Select a Session by it's unique id, if it exists."
-  :args
-  {:id {:type (non-null ID)}}
-  :resolve :query/session-by-id}}}
+  {:type :Recipe,
+   :description "Access a recipe by it's unique id, if it exists.",
+   :args {:id {:type (non-null Int)}},
+   :resolve :query/recipe-by-id},
+  :user_by_id
+  {:type :User,
+   :description "Select a user by their unique id, if they exist.",
+   :args {:id {:type (non-null Int)}},
+   :resolve :query/user-by-id},
+  :session_by_id
+  {:type :Session,
+   :description "Select a Session by it's unique id, if it exists.",
+   :args {:id {:type (non-null Int)}},
+   :resolve :query/session-by-id}}}

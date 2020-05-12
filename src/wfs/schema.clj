@@ -5,44 +5,61 @@
    [com.walmartlabs.lacinia.util :as util]
    [com.walmartlabs.lacinia.schema :as schema]
    [com.stuartsierra.component :as component]
-   [clojure.edn :as edn])
+   [clojure.edn :as edn]
+   [wfs.db :as db]
+   [clojure.walk :refer [postwalk]]
+   [wfs.base64 :refer [b64->str str->b64]]
+   [taoensso.timbre :as t])
   (:import (java.io StringReader)))
+
+(defn unqualified
+  "me irl"
+  [tree]
+  (postwalk #(if (keyword? %) (-> % name keyword) %) tree))
 
 (defn recipe-by-id
   [db]
   (fn [_ {:keys [id]} _]
-    (get-in db [:recipes id])))
+    (unqualified (db/recipe-by-id db id))))
 
 (defn session-by-id
-  [session-manager]
+  [db]
   (fn [_ {:keys [id]} _]
-    (get-in session-manager [:sessions id])))
+    (unqualified (db/session-by-id db id))))
 
 (defn user-by-id
   [db]
   (fn [_ {:keys [id]} _]
-    (get-in db [:users id])))
+    (unqualified (db/user-by-id db id))))
 
 (defn User->recipes
   [db]
   (fn [_ _ user] []))
 
+(defn User->sessions
+  [db]
+  (fn [_ _ user]
+    (unqualified (db/session-by-user db user))))
+
 (defn Session->users
-  [session-manager db]
-  (fn [_ _ session] []))
+  [db]
+  (fn [_ _ session]
+    []))
 
 (defn resolver-map
-  [{:keys [session-manager db]}]
+  [{:keys [db]}]
   {:query/recipe-by-id (recipe-by-id db)
-    :query/user-by-id (user-by-id db)
-    :query/session-by-id (session-by-id session-manager)
-    :User/recipes (User->recipes db)
-    :Session/users (constantly [])
-    :Session/recipes_connection (constantly {:page_info {:has_previous_page false
-                                                         :has_next_page false
-                                                         :start_cursor nil
-                                                         :end_cursor nil}
-                                             :edges []})})
+   :query/user-by-id (user-by-id db)
+   :query/session-by-id (session-by-id db)
+   :User/recipes (User->recipes db)
+   :User/sessions (User->sessions db)
+   :Session/users (Session->users db)
+   :Session/recipes_connection (fn [_ _ _] (t/warn "recipes_connection not implemented")
+                                 {:page_info {:has_previous_page false
+                                              :has_next_page false
+                                              :start_cursor (-> 0 str str->b64)
+                                              :end_cursor (-> 1 str str->b64)}
+                                  :edges []})})
 
 (defn load-schema
   [component]
@@ -66,4 +83,4 @@
   []
   {:schema-provider (-> {}
                         map->SchemaProvider
-                        (component/using [:session-manager :db]))})
+                        (component/using [:db]))})

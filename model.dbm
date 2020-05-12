@@ -38,9 +38,9 @@ END;
 <table name="user" layer="0" collapse-mode="2" max-obj-count="4">
 	<schema name="public"/>
 	<role name="postgres"/>
-	<position x="50" y="50"/>
+	<position x="60" y="60"/>
 	<column name="user_id" not-null="true"
-	 identity-type="BY DEFAULT">
+	 identity-type="ALWAYS">
 		<type name="integer" length="0"/>
 	</column>
 	<column name="name" not-null="true">
@@ -81,8 +81,9 @@ END;
 <table name="session" layer="0" collapse-mode="2" max-obj-count="3">
 	<schema name="public"/>
 	<role name="postgres"/>
-	<position x="425.97" y="397.063"/>
-	<column name="session_id" not-null="true">
+	<position x="420" y="400"/>
+	<column name="session_id" not-null="true"
+	 identity-type="ALWAYS">
 		<type name="integer" length="0"/>
 	</column>
 	<column name="created_at" not-null="true" default-value="CURRENT_TIMESTAMP">
@@ -107,7 +108,7 @@ END;
 	<role name="postgres"/>
 	<position x="560" y="80"/>
 	<column name="recipe_id" not-null="true"
-	 identity-type="BY DEFAULT">
+	 identity-type="ALWAYS">
 		<type name="integer" length="0"/>
 	</column>
 	<column name="name" not-null="true">
@@ -165,11 +166,12 @@ END;
 	 src-required="false" dst-required="false"
 	 table-name="many_session_has_many_user">
 	<label ref-type="name-label">
-		<position x="-49.8847" y="3.46171"/>
+		<position x="-45.7432" y="-5.25605"/>
 	</label>
 	<column name="joined_at" not-null="true" default-value="CURRENT_TIMESTAMP">
 		<type name="timestamp" length="0"/>
 	</column>
+	<special-pk-cols indexes="0"/>
 </relationship>
 
 </dbmodel>
