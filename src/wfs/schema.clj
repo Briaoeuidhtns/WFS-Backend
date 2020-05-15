@@ -8,8 +8,9 @@
    [clojure.edn :as edn]
    [wfs.db.query :as q]
    [clojure.walk :refer [postwalk]]
-   [wfs.base64 :refer [b64->str str->b64]]
-   [taoensso.timbre :as t]))
+   [taoensso.timbre :as t]
+   [clojure.string :as string]
+   [camel-snake-kebab.extras :refer [transform-keys]]))
 
 (defn unqualified
   "me irl"
@@ -46,6 +47,11 @@
   (fn [_ _ session]
     (q/users-by-session db session)))
 
+(defn Session->RecipesConnection
+  [db]
+  (fn [_ args session]
+    (q/recipes-connection-by-session db (merge args session))))
+
 (defn resolver-map
   [{:keys [db]}]
   {:query/recipe-by-id (recipe-by-id db)
@@ -54,20 +60,23 @@
    :User/recipes (User->recipes db)
    :User/sessions (User->sessions db)
    :Session/users (Session->users db)
-   :Session/recipes_connection (fn [_ _ _] (t/warn "recipes_connection not implemented")
-                                 {:page_info {:has_previous_page false
-                                              :has_next_page false
-                                              :start_cursor (-> 0 str str->b64)
-                                              :end_cursor (-> 1 str str->b64)}
-                                  :edges []})})
+   :Session/recipes-connection (Session->RecipesConnection db)
+   :mutation/yoink-recipe (constantly nil)
+   :mutation/rate-recipe (constantly nil)})
+
+(defn keys->gql
+  [schema]
+  (transform-keys #(-> % name (string/replace \- \_) keyword) schema))
 
 (defn load-schema
   [component]
-  (-> (io/resource "wfs-schema.edn")
-      slurp
-      edn/read-string
-      (util/attach-resolvers (resolver-map component))
-      schema/compile))
+  (with-open [r (io/reader (io/resource "wfs-schema.edn"))
+              pb (java.io.PushbackReader. r)]
+    (-> pb
+        edn/read
+        keys->gql
+        (util/attach-resolvers (resolver-map component))
+        schema/compile)))
 
 (defrecord SchemaProvider [schema]
 

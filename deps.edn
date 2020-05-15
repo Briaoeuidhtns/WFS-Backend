@@ -9,6 +9,7 @@
   nilenso/honeysql-postgres {:mvn/version "0.2.6"},
   seancorfield/next.jdbc {:mvn/version "1.0.424"},
   com.taoensso/timbre {:mvn/version "4.11.0-alpha1"},
+  camel-snake-kebab/camel-snake-kebab {:mvn/version "0.4.1"},
   com.impossibl.pgjdbc-ng/pgjdbc-ng {:mvn/version "0.8.4"}},
  :mvn/repos
  {"central" {:url "https://repo1.maven.org/maven2/"},
