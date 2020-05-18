@@ -21,3 +21,5 @@ pom.xml.asc
 .clj-kondo/.cache/
 
 # End of https://www.gitignore.io/api/clojure
+
+*.pem
