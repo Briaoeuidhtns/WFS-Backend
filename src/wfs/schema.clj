@@ -17,21 +17,29 @@
 (defn unqualified
   "me irl"
   [tree]
-  (postwalk #(if (keyword? %) (-> % name keyword) %) tree))
+  (postwalk #(if (keyword? %)
+               (-> %
+                   name
+                   keyword)
+               %)
+            tree))
 
 (defn recipe-by-id
   [db]
-  (fn [_ {:keys [id]} _]
+  (fn [_ {:keys [id]}
+       _]
     (q/recipe-by-id db id)))
 
 (defn session-by-id
   [db]
-  (fn [_ {:keys [id]} _]
+  (fn [_ {:keys [id]}
+       _]
     (q/session-by-id db id)))
 
 (defn user-by-id
   [db]
-  (fn [_ {:keys [id]} _]
+  (fn [_ {:keys [id]}
+       _]
     (q/user-by-id db id)))
 
 (defn User->recipes
@@ -68,7 +76,11 @@
 
 (defn keys->gql
   [schema]
-  (transform-keys #(-> % name (string/replace \- \_) keyword) schema))
+  (transform-keys #(-> %
+                       name
+                       (string/replace \- \_)
+                       keyword)
+                  schema))
 
 (defn- edn-resource
   [name]
@@ -92,15 +104,14 @@
 
   component/Lifecycle
 
-  (start [self]
-    (assoc self :schema (load-schema self)))
+    (start [self]
+      (assoc self :schema (load-schema self)))
 
-  (stop [self]
-    (assoc self :schema nil)))
+    (stop [self]
+      (assoc self :schema nil)))
 
 (defn new-schema-provider
   []
   {:schema-provider (-> {}
                         map->SchemaProvider
                         (component/using [:db]))})
-
