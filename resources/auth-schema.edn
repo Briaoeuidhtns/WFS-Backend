@@ -1,9 +1,13 @@
 {:input-objects
-   {:User {:description "Authentication information for a user."
-           :fields {:username {:type (non-null String)}
-                    :password {:type (non-null String)}}}}
+   {:UserClaim {:description "Authentication information for a user."
+                :fields {:username {:type (non-null String)}
+                         :password {:type (non-null String)}}}}
  :queries
-   {:get-claim
+   {:signed
       {:type String
        :description
-         "Get a signed token representation of a claim. Currently only `User`s supported"}}}
+         "Get a signed token representation of a user claim.
+
+Returns an error on invalid claims "
+       :args {:claim {:type (non-null :UserClaim)}}
+       :resolve :query/signed}}}

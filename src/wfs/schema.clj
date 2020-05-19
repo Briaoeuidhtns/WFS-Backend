@@ -72,29 +72,34 @@
    :Session/users (Session->users db)
    :Session/recipes-connection (Session->RecipesConnection db)
    :mutation/yoink-recipe (constantly nil)
-   :mutation/rate-recipe (constantly nil)})
+   :mutation/rate-recipe (constantly nil)
+
+   :query/signed (fn [_ user _] (throw+ user "Unauthorized"))})
 
 (defn keys->gql
   [schema]
-  (transform-keys #(-> %
-                       name
-                       (string/replace \- \_)
-                       keyword)
+  (transform-keys #(if (#{:input-objects} %)
+                     %
+                     (-> %
+                         name
+                         (string/replace \- \_)
+                         keyword))
                   schema))
 
 (defn- edn-resource
   [name]
-  (with-open [r (io/reader (io/resource name))
+  (with-open [r  (io/reader (io/resource name))
               pb (java.io.PushbackReader. r)]
     (edn/read pb)))
 
 (defn load-schema
   [component]
-  (let [slices (map edn-resource '("wfs-schema" "auth-schema"))
-        schema (deep-merge-with (fn [& vals]
-                                  (throw+ {:type ::duplicate-keys :keys vals}
-                                          "Duplicate keys in schema"))
-                                slices)]
+  (let [slices  (map edn-resource '("wfs-schema.edn" "auth-schema.edn"))
+        combine (partial deep-merge-with
+                         (fn [& vals]
+                           (throw+ {:type ::duplicate-keys :keys vals})
+                           "Duplicate keys in schema"))
+        schema  (apply combine slices)]
     (-> schema
         keys->gql
         (util/attach-resolvers (resolver-map component))
