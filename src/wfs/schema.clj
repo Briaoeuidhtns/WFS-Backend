@@ -1,16 +1,18 @@
 (ns wfs.schema
   "Contains custom resolvers and a function to provide the full schema."
   (:require
-   [clojure.java.io :as io]
-   [com.walmartlabs.lacinia.util :as util]
-   [com.walmartlabs.lacinia.schema :as schema]
-   [com.stuartsierra.component :as component]
+   [camel-snake-kebab.extras :refer [transform-keys]]
    [clojure.edn :as edn]
-   [wfs.db.query :as q]
-   [clojure.walk :refer [postwalk]]
-   [taoensso.timbre :as t]
+   [clojure.java.io :as io]
    [clojure.string :as string]
-   [camel-snake-kebab.extras :refer [transform-keys]]))
+   [clojure.walk :refer [postwalk]]
+   [com.stuartsierra.component :as component]
+   [com.walmartlabs.lacinia.schema :as schema]
+   [com.walmartlabs.lacinia.util :as util]
+   [slingshot.slingshot :refer [throw+]]
+   [taoensso.timbre :as t]
+   [wfs.db.query :as q]
+   [wfs.util :refer [deep-merge-with]]))
 
 (defn unqualified
   "me irl"
@@ -68,12 +70,20 @@
   [schema]
   (transform-keys #(-> % name (string/replace \- \_) keyword) schema))
 
+(defn- edn-resource
+  [name]
+  (with-open [r (io/reader (io/resource name))
+              pb (java.io.PushbackReader. r)]
+    (edn/read pb)))
+
 (defn load-schema
   [component]
-  (with-open [r (io/reader (io/resource "wfs-schema.edn"))
-              pb (java.io.PushbackReader. r)]
-    (-> pb
-        edn/read
+  (let [slices (map edn-resource '("wfs-schema" "auth-schema"))
+        schema (deep-merge-with (fn [& vals]
+                                  (throw+ {:type ::duplicate-keys :keys vals}
+                                          "Duplicate keys in schema"))
+                                slices)]
+    (-> schema
         keys->gql
         (util/attach-resolvers (resolver-map component))
         schema/compile)))
@@ -93,3 +103,4 @@
   {:schema-provider (-> {}
                         map->SchemaProvider
                         (component/using [:db]))})
+
