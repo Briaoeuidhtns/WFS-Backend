@@ -1,6 +1,7 @@
 {:paths ["src" "resources"],
  :deps
- {org.clojure/clojure {:mvn/version "1.10.1"},
+ {buddy/buddy-core {:mvn/version "1.6.0"},
+  org.clojure/clojure {:mvn/version "1.10.1"},
   com.zaxxer/HikariCP {:mvn/version "3.4.5"},
   com.walmartlabs/lacinia-pedestal {:mvn/version "0.13.0"},
   tick {:mvn/version "0.4.23-alpha"},
@@ -9,6 +10,7 @@
   com.stuartsierra/component {:mvn/version "1.0.0"},
   nilenso/honeysql-postgres {:mvn/version "0.2.6"},
   seancorfield/next.jdbc {:mvn/version "1.0.424"},
+  buddy/buddy {:mvn/version "2.0.0"},
   com.taoensso/timbre {:mvn/version "4.11.0-alpha1"},
   camel-snake-kebab/camel-snake-kebab {:mvn/version "0.4.1"},
   com.impossibl.pgjdbc-ng/pgjdbc-ng {:mvn/version "0.8.4"}},
@@ -35,4 +37,7 @@
    {find-deps
     {:git/url "https://github.com/holyjak/find-deps.git",
      :sha "88d60faf0db23cf4e2f8155ca82ae49fc6dea164"}},
-   :main-opts ["-m" "find-deps.core" "-Fsave"]}}}
+   :main-opts ["-m" "find-deps.core" "-Fsave"]},
+  :keygen
+  {:extra-deps {net.i2p.crypto/eddsa {:mvn/version "0.3.0"}},
+   :main-opts ["-m" "keygen" "./resources/"]}}}
