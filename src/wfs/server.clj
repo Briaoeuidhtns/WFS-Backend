@@ -3,17 +3,16 @@
    [com.stuartsierra.component :as component]
    [com.walmartlabs.lacinia.pedestal :as lp]
    [io.pedestal.http :as http]
-   [wfs.auth.interceptor :as auth.interceptors]))
-
+   [wfs.auth.interceptor :as auth.interceptors]
+   [taoensso.timbre :as log]))
 
 (defn- service-map
   [schema options]
   (let [opt          (merge options {})
-        default      (lp/default-interceptors schema opt)
-        interceptors (lp/inject default
-                                auth.interceptors/user-info
-                                :after
-                                ::lp/inject-app-context)]
+        interceptors (-> (lp/default-interceptors schema opt)
+                         (lp/inject auth.interceptors/user-info
+                                    :after
+                                    ::lp/inject-app-context))]
     (lp/service-map schema (assoc opt :interceptors interceptors))))
 
 (defrecord Server [schema-provider server]
@@ -22,7 +21,7 @@
       (assoc self
         :server (-> schema-provider
                     :schema
-                    (lp/service-map {:graphiql true})
+                    (service-map {:graphiql true})
                     http/create-server
                     http/start)))
     (stop [self]
