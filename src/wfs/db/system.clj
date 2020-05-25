@@ -10,24 +10,25 @@
 (defrecord Database [ds]
   component/Lifecycle
 
-  (start [self]
-    (assoc self
-           :ds (jdbc/get-datasource {:dbtype "pgsql"
-                                     :dbname "wfs"
-                                     :port 25432
-                                     :user "postgres"
-                                     :password "wfspassword"})))
+    (start [self]
+      (assoc self
+        :ds (jdbc/get-datasource {:dbtype "pgsql"
+                                  :dbname "wfs"
+                                  :port 25432
+                                  :user "postgres"
+                                  :password "wfspassword"})))
 
-  ;; TODO close it?
-  ;; Can't tell if it needs to happen but it isn't Closeable
-  (stop [self]
-    (assoc self :db nil)))
+    ;; TODO close it?
+    ;; Can't tell if it needs to happen but it isn't Closeable
+    (stop [self]
+      (assoc self :db nil)))
 
-(defn new-db []
+(defn new-db
+  []
   {:db (map->Database {})})
 
 (defn sql-format
   [sql-map]
-  (let [q (sql/format sql-map :namespace-as-table? true)]
+  (let [q (sql/format sql-map :namespace-as-table? true :quoting :ansi)]
     (t/info q)
     q))

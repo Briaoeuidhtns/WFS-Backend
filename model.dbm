@@ -35,13 +35,15 @@ END;
 ]]></definition>
 </function>
 
-<table name="registered_user" layer="0" collapse-mode="2" max-obj-count="4">
+<table name="registered_user" layer="0" collapse-mode="2" max-obj-count="6">
 	<schema name="public"/>
 	<role name="postgres"/>
 	<position x="60" y="80"/>
-	<column name="user_id" not-null="true"
-	 identity-type="ALWAYS">
-		<type name="integer" length="0"/>
+	<column name="username" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="password" not-null="true">
+		<type name="text" length="0"/>
 	</column>
 	<column name="name" not-null="true">
 		<type name="text" length="0"/>
@@ -53,7 +55,7 @@ END;
 		<type name="timestamp" length="0"/>
 	</column>
 	<constraint name="member_pkey" type="pk-constr" table="public.registered_user">
-		<columns names="user_id" ref-type="src-columns"/>
+		<columns names="username" ref-type="src-columns"/>
 	</constraint>
 </table>
 

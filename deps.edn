@@ -3,6 +3,7 @@
  {buddy/buddy-core {:mvn/version "1.6.0"},
   org.clojure/clojure {:mvn/version "1.10.1"},
   com.zaxxer/HikariCP {:mvn/version "3.4.5"},
+  expound/expound {:mvn/version "0.8.4"},
   com.walmartlabs/lacinia-pedestal {:mvn/version "0.13.0"},
   tick {:mvn/version "0.4.23-alpha"},
   honeysql/honeysql {:mvn/version "0.9.10"},
@@ -14,7 +15,9 @@
   com.taoensso/timbre {:mvn/version "4.11.0-alpha1"},
   com.taoensso/nippy {:mvn/version "2.15.0-alpha10"},
   buddy/buddy-auth {:mvn/version "2.2.0"},
+  com.gfredericks/schpec {:mvn/version "0.1.2"},
   buddy/buddy-sign {:mvn/version "3.1.0"},
+  org.clojure/test.check {:mvn/version "1.0.0"},
   camel-snake-kebab/camel-snake-kebab {:mvn/version "0.4.1"},
   com.impossibl.pgjdbc-ng/pgjdbc-ng {:mvn/version "0.8.4"}},
  :mvn/repos

@@ -1,4 +1,7 @@
-(ns wfs.util)
+(ns wfs.util
+  (:require
+   [clojure.edn :as edn]
+   [clojure.java.io :as io]))
 
 (defn deep-merge-with
   "Like merge-with, but merges maps recursively, applying the given fn
@@ -12,3 +15,9 @@
              (apply merge-with m maps)
              (apply f maps)))
     maps))
+
+(defn edn-resource
+  [name]
+  (with-open [r  (io/reader (io/resource name))
+              pb (java.io.PushbackReader. r)]
+    (edn/read pb)))

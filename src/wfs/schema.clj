@@ -2,8 +2,6 @@
   "Contains custom resolvers and a function to provide the full schema."
   (:require
    [camel-snake-kebab.extras :refer [transform-keys]]
-   [clojure.edn :as edn]
-   [clojure.java.io :as io]
    [clojure.string :as string]
    [clojure.walk :refer [postwalk]]
    [com.stuartsierra.component :as component]
@@ -12,7 +10,8 @@
    [slingshot.slingshot :refer [throw+]]
    [taoensso.timbre :as t]
    [wfs.db.query :as q]
-   [wfs.util :refer [deep-merge-with]]))
+   [wfs.auth.user :as user]
+   [wfs.util :refer [deep-merge-with edn-resource]]))
 
 (defn unqualified
   "me irl"
@@ -62,6 +61,12 @@
   (fn [_ args session]
     (q/recipes-connection-by-session db (merge args session))))
 
+(defn signed
+  [db]
+  (fn [_ {:keys [claim]}
+       _]
+    (user/token db claim)))
+
 (defn resolver-map
   [{:keys [db]}]
   {:query/recipe-by-id (recipe-by-id db)
@@ -74,7 +79,7 @@
    :mutation/yoink-recipe (constantly nil)
    :mutation/rate-recipe (constantly nil)
 
-   :query/signed (fn [_ user _] (throw+ user "Unauthorized"))})
+   :query/signed (signed db)})
 
 (defn keys->gql
   [schema]
@@ -85,12 +90,6 @@
                          (string/replace \- \_)
                          keyword))
                   schema))
-
-(defn- edn-resource
-  [name]
-  (with-open [r  (io/reader (io/resource name))
-              pb (java.io.PushbackReader. r)]
-    (edn/read pb)))
 
 (defn load-schema
   [component]

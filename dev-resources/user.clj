@@ -1,20 +1,23 @@
 (ns user
   (:require
-   [wfs.schema :as s]
-   [wfs.system :as system]
-   [wfs.db.query :as db]
-   [com.walmartlabs.lacinia :as lacinia]
-   [com.walmartlabs.lacinia.pedestal :as lp]
-   [io.pedestal.http :as http]
    [clojure.java.browse :refer [browse-url]]
+   [clojure.spec.alpha :as s]
    [clojure.walk :as walk]
    [com.stuartsierra.component :as component]
-   [next.jdbc :as jdbc]
-   [next.jdbc.specs :as specs]
+   com.walmartlabs.lacinia.expound
+   [com.walmartlabs.lacinia :as lacinia]
+   [com.walmartlabs.lacinia.pedestal :as lp]
+   [expound.alpha :as expound]
+   [honeysql-postgres.format :refer :all]
+   [honeysql-postgres.helpers :as psqlh]
    [honeysql.core :as sql]
    [honeysql.helpers :as h]
-   [honeysql-postgres.format :refer :all]
-   [honeysql-postgres.helpers :as psqlh])
+   [io.pedestal.http :as http]
+   [next.jdbc :as jdbc]
+   [next.jdbc.specs :as specs]
+   [wfs.db.query :as db]
+   [wfs.schema :as schema]
+   [wfs.system :as system])
   (:import (clojure.lang IPersistentMap)))
 
 (defn simplify
@@ -56,3 +59,5 @@
   :stopped)
 
 (specs/instrument)
+
+(alter-var-root #'s/*explain-out* (constantly expound/printer))

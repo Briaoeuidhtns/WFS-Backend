@@ -28,7 +28,7 @@
    :from [:session]})
 
 (def ^:private user-base
-  {:select [[:registered-user/user-id :id]
+  {:select [[:registered-user/username :id]
             :registered-user/name]
    :from [:registered-user]})
 
@@ -49,9 +49,18 @@
     (jdbc/execute-one! (:ds self) $ opts)))
 
 (defn user-by-id
-  [self user-id]
+  [self username]
   (as-> user-base $
-    (sql/build $ :where [:= :registered-user/user-id user-id])
+    (sql/build $ :where [:= :registered-user/username username])
+    (sql-format $)
+    (jdbc/execute-one! (:ds self) $ opts)))
+
+(defn user-creds
+  [self username]
+  (as-> user-base $
+    (sql/build $
+               :select [:registered-user/password]
+               :where [:= :registered-user/username username])
     (sql-format $)
     (jdbc/execute-one! (:ds self) $ opts)))
 
@@ -62,7 +71,8 @@
       $
       :join [:many-user-has-many-recipe
              [:= :recipe/recipe-id :many-recipe-has-many-user/recipe-id-recipe]]
-      :where [:= :many-user-has-many-recipe/user-id-registered-user (:id user)])
+      :where
+        [:= :many-user-has-many-recipe/username-registered-user (:id user)])
     (sql-format $)
     (jdbc/execute! (:ds self) $ opts)))
 
@@ -75,7 +85,7 @@
                        :session/session-id
                        :many-session-has-many-user/session-id-session]]
                :where [:=
-                       :many-session-has-many-user/user-id-registered-user
+                       :many-session-has-many-user/username-registered-user
                        (:id user)])
     (sql-format $)
     (jdbc/execute! (:ds self) $ opts)))
@@ -86,8 +96,8 @@
     (sql/build $
                :join [:many-session-has-many-user
                       [:=
-                       :registered-user/user-id
-                       :many-session-has-many-user/user-id-registered-user]]
+                       :registered-user/username
+                       :many-session-has-many-user/username-registered-user]]
                :where [:=
                        :many-session-has-many-user/session-id-session
                        (:id session)])
