@@ -18,6 +18,9 @@ jobs:
         with:
           tools-deps: latest
 
+      - name: Generate dummy auth keys
+        run: clojure -Akeygen
+
       - name: Run tests
         run: clojure -Atest
       - uses: actions/upload-artifact@v2
