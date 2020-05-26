@@ -14,7 +14,7 @@
   user-info
   [{:keys [request] :as context}]
   (let [ident (middleware/authenticate-request request [auth-backend])]
-    (log/info "Claim validated as" identity)
+    (log/info "Claim validated as" ident)
     (assoc-in context
       [:request :lacinia-app-context ::auth/identity]
       ident)))
