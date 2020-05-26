@@ -2,4 +2,4 @@
 ;;; For more information see (info "(emacs) Directory Variables")
 
 ((clojure-mode
-  (cider-clojure-cli-parameters . "-Cdev -m nrepl.cmdline --middleware '%s'")))
+  (cider-clojure-cli-parameters . "-Adev -m nrepl.cmdline --middleware '%s'")))

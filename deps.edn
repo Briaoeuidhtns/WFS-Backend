@@ -4,8 +4,8 @@
   org.clojure/clojure {:mvn/version "1.10.1"},
   com.zaxxer/HikariCP {:mvn/version "3.4.5"},
   expound/expound {:mvn/version "0.8.4"},
+  tick/tick {:mvn/version "0.4.23-alpha"},
   com.walmartlabs/lacinia-pedestal {:mvn/version "0.13.0"},
-  tick {:mvn/version "0.4.23-alpha"},
   honeysql/honeysql {:mvn/version "0.9.10"},
   slingshot/slingshot {:mvn/version "0.12.2"},
   com.stuartsierra/component {:mvn/version "1.0.0"},
@@ -24,7 +24,9 @@
  {"central" {:url "https://repo1.maven.org/maven2/"},
   "clojars" {:url "https://repo.clojars.org/"}},
  :aliases
- {:dev {:extra-paths ["dev-resources"]},
+ {:dev
+  {:extra-paths ["dev-resources"],
+   :extra-deps {datawalk/datawalk {:mvn/version "0.1.12"}}},
   :run {:main-opts ["-m" "wfs.core"]},
   :test
   {:extra-paths ["test/main/clojure"],
