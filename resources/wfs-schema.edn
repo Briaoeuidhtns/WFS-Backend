@@ -12,7 +12,7 @@
     :User
       {:description "A user of the wfs app."
        :fields
-         {:id {:type (non-null Int)}
+         {:username {:type (non-null String)}
           :name {:type (non-null String)}
           :recipes
             {:type (non-null (list (non-null :Recipe)))
@@ -77,10 +77,13 @@
        :description "Access a recipe by it's unique id, if it exists."
        :args {:id {:type (non-null Int)}}
        :resolve :query/recipe-by-id}
-    :user-by-id
+    :user
       {:type :User
-       :description "Select a user by their unique id, if they exist."
-       :args {:id {:type (non-null Int)}}
+       :description
+         "Select a user by their username, if they exist.
+
+If the id is empty uses auth information to get the current user"
+       :args {:id {:type String}}
        :resolve :query/user-by-id}
     :session-by-id
       {:type :Session

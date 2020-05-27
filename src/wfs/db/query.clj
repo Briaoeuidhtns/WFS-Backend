@@ -28,7 +28,7 @@
    :from [:session]})
 
 (def ^:private user-base
-  {:select [[:registered-user/username :id]
+  {:select [:registered-user/username
             :registered-user/name]
    :from [:registered-user]})
 
@@ -70,9 +70,11 @@
     (sql/build
       $
       :join [:many-user-has-many-recipe
-             [:= :recipe/recipe-id :many-recipe-has-many-user/recipe-id-recipe]]
+             [:= :recipe/recipe-id :many-user-has-many-recipe/recipe-id-recipe]]
       :where
-        [:= :many-user-has-many-recipe/username-registered-user (:id user)])
+        [:=
+         :many-user-has-many-recipe/username-registered-user
+         (:username user)])
     (sql-format $)
     (jdbc/execute! (:ds self) $ opts)))
 

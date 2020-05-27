@@ -5,6 +5,7 @@
    [clojure.string :as string]
    [clojure.walk :refer [postwalk]]
    [com.stuartsierra.component :as component]
+   [com.walmartlabs.lacinia.resolve :as resolve]
    [com.walmartlabs.lacinia.schema :as schema]
    [com.walmartlabs.lacinia.util :as util]
    [slingshot.slingshot :refer [throw+]]
@@ -37,9 +38,8 @@
 
 (defn user-by-id
   [db]
-  (fn [_ {:keys [id]}
-       _]
-    (q/user-by-id db id)))
+  (fn [{{auth-id :username} ::user/identity} {:keys [id]} _]
+    (q/user-by-id db (or id auth-id))))
 
 (defn User->recipes
   [db]
@@ -48,8 +48,13 @@
 
 (defn User->sessions
   [db]
-  (fn [_ _ user]
-    (q/sessions-by-user db user)))
+  (fn [{{auth-name :username} ::user/identity} _ {req-name :username :as user}]
+    (if (and auth-name (= auth-name req-name))
+      (q/sessions-by-user db user)
+      (resolve/with-error ()
+                          {:message "You can only access your own sessions"
+                           ::required req-name
+                           ::authorized-for auth-name}))))
 
 (defn Session->users
   [db]
