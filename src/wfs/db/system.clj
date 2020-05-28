@@ -7,16 +7,12 @@
    [honeysql-postgres.helpers :as psqlh]
    [taoensso.timbre :as t]))
 
-(defrecord Database [ds]
+(defrecord Database [ds config]
   component/Lifecycle
 
     (start [self]
       (assoc self
-        :ds (jdbc/get-datasource {:dbtype "pgsql"
-                                  :dbname "wfs"
-                                  :port 25432
-                                  :user "postgres"
-                                  :password "wfspassword"})))
+        :ds (jdbc/get-datasource config)))
 
     ;; TODO close it?
     ;; Can't tell if it needs to happen but it isn't Closeable
@@ -24,8 +20,16 @@
       (assoc self :db nil)))
 
 (defn new-db
-  []
-  {:db (map->Database {})})
+  ([]
+   (new-db nil))
+  ([config?]
+   {:db (map->Database {:config (merge
+                                  {:dbtype "pgsql"
+                                   :dbname "wfs"
+                                   :port 25432
+                                   :user "postgres"
+                                   :password "wfspassword"}
+                                  config?)})}))
 
 (defn sql-format
   [sql-map]

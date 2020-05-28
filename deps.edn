@@ -32,7 +32,9 @@
   {:extra-paths ["test/main/clojure"],
    :extra-deps
    {lambdaisland/kaocha {:mvn/version "1.0.629"},
-    lambdaisland/kaocha-cloverage {:mvn/version "1.0-45"}},
+    lambdaisland/kaocha-cloverage {:mvn/version "1.0-45"},
+    org.testcontainers/testcontainers {:mvn/version "1.14.2"},
+    org.testcontainers/postgresql {:mvn/version "1.14.2"}},
    :main-opts ["-m" "kaocha.runner"]},
   :uberjar
   {:extra-deps {luchiniatwork/cambada {:mvn/version "1.0.2"}},
