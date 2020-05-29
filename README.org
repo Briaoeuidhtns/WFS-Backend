@@ -22,6 +22,11 @@ The tests use github packages to store docker images, and even though they're pu
 *** Keys
 To generate a fresh keypair for auth tokens, run ~clj -Akeygen~. The generated key is available in edn encoded jwk format in =resources/jwk.edn=.
 
+*** Postgres
+The model is made using [[https://github.com/pgmodeler/pgmodeler][pgModeler]]. For a production database it just needs to be exported.
+
+To build a new Docker image for ci, first run ~pgmodeler-cli -if model.dbm -of target/model.sql -ef~. This requires a graphical environment so can't be run in ci, but is otherwise not interactive.
+
 ** Running tests
 After the docker registry has been set up, tests can be run with ~clj -Atest~
 
