@@ -29,7 +29,7 @@
    :extra-deps {datawalk/datawalk {:mvn/version "0.1.12"}}},
   :run {:main-opts ["-m" "wfs.core"]},
   :test
-  {:extra-paths ["test/main/clojure"],
+  {:extra-paths ["test"],
    :extra-deps
    {lambdaisland/kaocha {:mvn/version "1.0.629"},
     lambdaisland/kaocha-cloverage {:mvn/version "1.0-45"},

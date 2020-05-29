@@ -9,6 +9,23 @@
   "Test that the db system mocks work"
   (let [db (get-in db/*system* [:db :ds])]
     (t/is db "db was initialized")
-    (t/is (= {:val 1} (q/execute-one! db ["SELECT 1 AS VAL"])))))
+
+    (t/is (= {:val 1}
+             (q/execute-one! db ["SELECT 1 AS VAL"]))
+          "trivial query valid")
+
+    (t/is (= "test"
+             (:db
+               (q/execute-one!
+                 db
+                 ["SELECT current_database() AS db"])))
+          "connected to correct db")
+
+    (t/is (= "recipe"
+             (:name?
+               (q/execute-one!
+                 db
+                 ["SELECT CAST (to_regclass('recipe') AS TEXT) as \"name?\""])))
+          "schema was loaded")))
 
 (t/use-fixtures :each db/mock)
