@@ -18,6 +18,9 @@ jobs:
         with:
           tools-deps: latest
 
+      - name: test pulling ci image
+        run: docker pull docker.pkg.github.com/briaoeuidhtns/wfs-backend/wfs-postgres-ci:1.0
+
       - name: Generate dummy auth keys
         run: clojure -Akeygen
 
