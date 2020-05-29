@@ -1,0 +1,34 @@
+* What's for Supper
+
+[[https://github.com/Briaoeuidhtns/WFS-Backend/workflows/Clojure%20CI/badge.svg]]
+
+** Intro
+This is a work in progress backend for my senior design project, [[http://whatshouldsupper.be][What's for Supper]].
+
+While the project was originally a team effort, this is a currently solo continuation for a fork.
+
+** Motivation
+While I probably could have continued to use CouchDB, some features seemed easier to implement in a more general purpose server framework.
+
+*** Goals
+- Shared sessions
+- Recipe sharing
+- Dynamic recipe sets, ie. local restaurants
+
+** Setup
+*** Docker
+The tests use github packages to store docker images, and even though they're public, you must be authenticated as per [[https://help.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages#authenticating-to-github-packages][these instructions]]. More info [[https://github.community/t/download-from-github-package-registry-without-authentication/14407][here]].
+
+*** Keys
+To generate a fresh keypair for auth tokens, run ~clj -Akeygen~. The generated key is available in edn encoded jwk format in =resources/jwk.edn=.
+
+** Running tests
+After the docker registry has been set up, tests can be run with ~clj -Atest~
+
+** Running the server
+The server can be run with ~clj -Arun~. This starts it in dev mode with extra traces and GraphiQL support.
+
+Otherwise can be started via repl with ~(user/start!)~.
+
+** Packaging
+The server can be packaged by running ~clj -Auberjar~.
