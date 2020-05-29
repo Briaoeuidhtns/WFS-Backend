@@ -11,7 +11,9 @@
 
 (defn mock
   [f]
-  (let [c (PostgreSQLContainer. "wfs-postgres-ci:1.0")]
+  (let
+    [c (PostgreSQLContainer.
+         "docker.pkg.github.com/briaoeuidhtns/wfs-backend/wfs-postgres-ci:1.0")]
     (.start c)
     (binding [*system* (component/start-system
                          (db.system/new-db
