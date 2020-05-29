@@ -19,7 +19,7 @@ jobs:
           tools-deps: latest
 
       - name: Log in to docker
-        run: echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u <token> --password-stdin
+        run: docker login docker.pkg.github.com -u ${{ secrets.GITHUB_TOKEN }}
 
       - name: Generate dummy auth keys
         run: clojure -Akeygen
