@@ -11,17 +11,16 @@
 
 (defn mock
   [f]
-  (let
+  (with-open
     [c (PostgreSQLContainer.
-         "docker.pkg.github.com/briaoeuidhtns/wfs-backend/wfs-postgres-ci:1.0")]
+         "docker.pkg.github.com/briaoeuidhtns/wfs-backend/wfs-postgres-ci:1.1")]
     (.start c)
-    (binding [*system* (component/start-system
-                         (db.system/new-db
-                           ;; Uses the wrong driver by default, doesn't support
-                           ;; setting it
-                           {:jdbcUrl (string/replace-first (.getJdbcUrl c)
-                                                           #"postgresql"
-                                                           "pgsql")
-                            :user (.getUsername c)
-                            :password (.getPassword c)}))]
+    (binding [*system* (db.system/new-db
+                         ;; Uses the wrong driver by default, doesn't support
+                         ;; setting it
+                         {:jdbcUrl (string/replace-first (.getJdbcUrl c)
+                                                         #"postgresql"
+                                                         "pgsql")
+                          :user (.getUsername c)
+                          :password (.getPassword c)})]
       (f))))

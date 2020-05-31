@@ -72,7 +72,7 @@
             {:type (non-null ID)
              :description "A cursor to the last edge of this page."}}}}
  :queries
-   {:recipe-by-id
+   {:recipe
       {:type :Recipe
        :description "Access a recipe by it's unique id, if it exists."
        :args {:id {:type (non-null Int)}}
@@ -85,7 +85,7 @@
 If the id is empty uses auth information to get the current user"
        :args {:id {:type String}}
        :resolve :query/user-by-id}
-    :session-by-id
+    :session
       {:type :Session
        :description "Select a Session by it's unique id, if it exists."
        :args {:id {:type (non-null Int)}}

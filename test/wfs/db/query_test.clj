@@ -3,11 +3,14 @@
    [clojure.test :as t]
    [next.jdbc :as q]
    [wfs.db.query :as sut]
-   [wfs.test.db :as db]))
+   [wfs.test.db :as db]
+   [com.stuartsierra.component :as component]))
+
+(t/use-fixtures :each db/mock)
 
 (t/deftest mock-test
   "Test that the db system mocks work"
-  (let [db (get-in db/*system* [:db :ds])]
+  (let [db (get-in (component/start-system db/*system*) [:db :ds])]
     (t/is db "db was initialized")
 
     (t/is (= {:val 1}
@@ -27,5 +30,3 @@
                  db
                  ["SELECT CAST (to_regclass('recipe') AS TEXT) as \"name?\""])))
           "schema was loaded")))
-
-(t/use-fixtures :each db/mock)

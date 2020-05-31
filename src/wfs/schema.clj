@@ -38,8 +38,12 @@
 
 (defn user-by-id
   [db]
-  (fn [{{auth-id :username} ::user/identity} {:keys [id]} _]
-    (q/user-by-id db (or id auth-id))))
+  (fn [{{auth-id :username} ::user/identity} {arg-id :id} _]
+    (if-let [id (or arg-id auth-id)]
+      (q/user-by-id db id)
+      (resolve/with-error nil
+                          {:message
+                             "No :id and no valid authentication found"}))))
 
 (defn User->recipes
   [db]

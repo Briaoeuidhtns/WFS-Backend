@@ -23,13 +23,13 @@
                        ::auth.interceptors/user-info))]
     (lp/service-map schema (assoc opt :interceptors interceptors))))
 
-(defrecord Server [schema-provider server]
+(defrecord Server [schema-provider server port]
   component/Lifecycle
     (start [self]
       (assoc self
         :server (-> schema-provider
                     :schema
-                    (service-map {:graphiql true})
+                    (service-map {:graphiql true :port port})
                     http/create-server
                     http/start)))
     (stop [self]
@@ -38,5 +38,5 @@
 
 (defn new-server
   []
-  {:server (component/using (map->Server {})
+  {:server (component/using (map->Server {:port 8888})
                             [:schema-provider])})
