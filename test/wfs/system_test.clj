@@ -3,9 +3,11 @@
    [wfs.system :as sut]
    [com.walmartlabs.lacinia :as lacinia]
    [clojure.test :as t]
+   [slingshot.test]
    [wfs.test.db :as db]
    [wfs.util :refer [deep-merge-with]]
    [wfs.test.util :refer [simplify]]
+   [wfs.auth.user :as user]
    [com.stuartsierra.component :as component]))
 
 (t/use-fixtures :each db/mock)
@@ -70,3 +72,20 @@
           (t/is (= (:data response) {:user {:username "brian" :sessions []}})
                 "valid data returned")
           (t/is (:errors response)))))))
+
+(t/deftest can-register-user
+  (let [{:keys [db] :as system} (component/start-system (test-system))
+        test-user               {:username "test"
+                                 :password "password"
+                                 :name "Test User"}]
+    (t/testing
+      "can register a new user"
+      (t/is (thrown+? [:type ::user/does-not-exist]
+                      (user/claim db test-user)))
+      (let
+        [reg-token
+         (q
+           system
+           "mutation {register_user(user: {username: \"test\", password: \"password\" name: \"Test User\"})}")]
+        (t/is (string? (get-in reg-token [:data :register_user])))
+        (t/is (map? (user/claim db test-user)))))))

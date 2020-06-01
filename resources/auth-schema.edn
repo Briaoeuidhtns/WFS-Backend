@@ -1,13 +1,27 @@
 {:input-objects
    {:UserClaim {:description "Authentication information for a user."
                 :fields {:username {:type (non-null String)}
-                         :password {:type (non-null String)}}}}
+                         :password {:type (non-null String)}}}
+    :NewUser {:description "Account registration inforation for a new user"
+              :fields {:name {:type (non-null String)}
+                       :username {:type (non-null String)}
+                       :password {:type (non-null String)}}}}
  :queries
    {:signed
       {:type String
        :description
          "Get a signed token representation of a user claim.
 
-Returns an error on invalid claims "
+Returns an error on invalid claims."
        :args {:claim {:type (non-null :UserClaim)}}
-       :resolve :query/signed}}}
+       :resolve :query/signed}}
+
+ :mutations
+   {:register-user
+      {:type String
+       :description
+         "Register a new user account.
+
+Returns a token that can be used to log in in place of calling `signed`."
+       :args {:user {:type (non-null :NewUser)}}
+       :resolve :mutation/register-user}}}

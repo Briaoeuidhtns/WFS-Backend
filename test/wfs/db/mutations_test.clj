@@ -20,10 +20,8 @@
     (t/is (= (inc init-n-user) (:count (q/execute-one! (:ds db) n-user-q)))
           "The database has one more user")
     (t/is
-      (=
-        1
-        (:exists?
-          (q/execute-one!
-            (:ds db)
-            ["SELECT COUNT(*) AS \"exists?\" FROM registered_user AS r WHERE r.username = ?"
-             (:username test-user)]))))))
+      (:exists?
+        (q/execute-one!
+          (:ds db)
+          ["SELECT COUNT(*) = 1 AS \"exists?\" FROM registered_user AS r WHERE r.username = ?"
+           (:username test-user)])))))

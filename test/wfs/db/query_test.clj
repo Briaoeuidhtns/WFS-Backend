@@ -6,7 +6,8 @@
    [wfs.test.db :as db]
    [com.stuartsierra.component :as component]))
 
-(t/use-fixtures :each db/mock)
+;; Can be run only once since these should all be pure
+(t/use-fixtures :once db/mock)
 
 (t/deftest mock-test
   "Test that the db system mocks work"

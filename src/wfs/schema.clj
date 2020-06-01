@@ -12,6 +12,7 @@
    [taoensso.timbre :as t]
    [wfs.db.query :as q]
    [wfs.auth.user :as user]
+   [wfs.db.mutations :as mut]
    [wfs.util :refer [deep-merge-with edn-resource]]))
 
 (defn unqualified
@@ -76,6 +77,14 @@
        _]
     (user/token db claim)))
 
+(defn register-user
+  [db]
+  (fn [_ {:keys [user]}
+       _]
+    (mut/add-user db (user/new user))
+    ;; Round trip to be sure account is valid
+    (user/token db user)))
+
 (defn resolver-map
   [{:keys [db]}]
   {:query/recipe-by-id (recipe-by-id db)
@@ -88,7 +97,8 @@
    :mutation/yoink-recipe (constantly nil)
    :mutation/rate-recipe (constantly nil)
 
-   :query/signed (signed db)})
+   :query/signed (signed db)
+   :mutation/register-user (register-user db)})
 
 (defn keys->gql
   [schema]
