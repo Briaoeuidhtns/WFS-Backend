@@ -116,4 +116,7 @@ If the id is empty uses auth information to get the current user"
             {:type Int
              :description
                "Rating for this recipe as an integer between 1 and 5 inclusive. nil clears the rating."}}
-       :resolve :mutation/rate-recipe}}}
+       :resolve :mutation/rate-recipe}
+    :start-session
+      {:type :Session
+       :resolve :mutation/start-session}}}

@@ -85,6 +85,12 @@
     ;; Round trip to be sure account is valid
     (user/token db user)))
 
+(defn start-session
+  [db]
+  (fn [_ {:keys []}
+       _]
+    (mut/start-session db)))
+
 (defn resolver-map
   [{:keys [db]}]
   {:query/recipe-by-id (recipe-by-id db)
@@ -96,6 +102,7 @@
    :Session/recipes-connection (Session->RecipesConnection db)
    :mutation/yoink-recipe (constantly nil)
    :mutation/rate-recipe (constantly nil)
+   :mutation/start-session (start-session db)
 
    :query/signed (signed db)
    :mutation/register-user (register-user db)})

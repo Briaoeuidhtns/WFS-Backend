@@ -33,6 +33,6 @@
 
 (defn sql-format
   [sql-map]
-  (let [q (sql/format sql-map :namespace-as-table? true :quoting :ansi)]
+  (let [q (sql/format sql-map :namespace-as-table? true)]
     (t/info q)
     q))
