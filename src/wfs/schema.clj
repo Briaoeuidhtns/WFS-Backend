@@ -15,6 +15,11 @@
    [wfs.db.mutations :as mut]
    [wfs.util :refer [deep-merge-with edn-resource]]))
 
+(def ^:private bad-auth
+  (resolve/with-error nil
+                      {:message
+                         "No valid authentication found"}))
+
 (defn unqualified
   "me irl"
   [tree]
@@ -42,9 +47,7 @@
   (fn [{{auth-id :username} ::user/identity} {arg-id :id} _]
     (if-let [id (or arg-id auth-id)]
       (q/user-by-id db id)
-      (resolve/with-error nil
-                          {:message
-                             "No :id and no valid authentication found"}))))
+      bad-auth)))
 
 (defn User->recipes
   [db]
@@ -87,9 +90,25 @@
 
 (defn start-session
   [db]
-  (fn [_ {:keys []}
+  (fn [{user ::user/identity}
+       {initial-users? :initial_users}
        _]
-    (mut/start-session db)))
+    (or (some-> user
+                (->> (mut/start-session db))
+                ((fn [ses-id]
+                   (when initial-users?
+                     (mut/session-inv db user ses-id initial-users?))
+                   ses-id))
+                (->> (q/session-by-id db)))
+        bad-auth)))
+
+(defn session-inv
+  [db]
+  (fn [{user ::user/identity}
+       {:keys [users session]}
+       _]
+    (if user (mut/session-inv db user session users))
+    bad-auth))
 
 (defn resolver-map
   [{:keys [db]}]
@@ -103,6 +122,7 @@
    :mutation/yoink-recipe (constantly nil)
    :mutation/rate-recipe (constantly nil)
    :mutation/start-session (start-session db)
+   :mutation/session-inv (session-inv db)
 
    :query/signed (signed db)
    :mutation/register-user (register-user db)})

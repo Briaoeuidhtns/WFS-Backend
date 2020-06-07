@@ -170,10 +170,9 @@ END;
 	<label ref-type="name-label">
 		<position x="-45.7432" y="-5.25605"/>
 	</label>
-	<column name="joined_at" not-null="true" default-value="CURRENT_TIMESTAMP">
+	<column name="joined_at" default-value="CURRENT_TIMESTAMP">
 		<type name="timestamp" length="0"/>
 	</column>
-	<special-pk-cols indexes="0"/>
 </relationship>
 
 <table name="session_recipes" layer="0" collapse-mode="2" max-obj-count="3">
@@ -231,7 +230,7 @@ END;
 	 src-required="false" dst-required="false"
 	 table-name="many_session_recipes_has_many_registered_user">
 	<label ref-type="name-label">
-		<position x="27.8322" y="21.2193"/>
+		<position x="22.441" y="14.7695"/>
 	</label>
 	<column name="likes">
 		<type name="boolean" length="0"/>

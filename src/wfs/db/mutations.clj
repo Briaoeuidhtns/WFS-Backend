@@ -41,3 +41,34 @@
 ;; INSERT INTO many_session_has_many_user (session_id_session,
 ;; username_registered_user) SELECT sess.session_id, 'brian' FROM sess
 ;; RETURNING session_id_session
+
+(defn session-inv
+  [{:keys [ds]} {auth-user :username} session users]
+  (let [authzd?
+        (->>
+          {:select [(sql/call
+                      :exists
+                      {:select [1]
+                       :from [:many-session-has-many-user]
+                       :where
+                         [:and
+                          [:=
+                           :many-session-has-many-user/session-id-session
+                           session]
+                          [:=
+                           :many-session-has-many-user/username-registered-user
+                           auth-user]]
+                       :limit 1})]}
+          sql-format
+          (jdbc/execute-one! ds)
+          :exists)]
+    (when authzd?
+      (->> {:insert-into :many-session-has-many-user
+            :values (map (partial assoc
+                                  {:session-id-session session}
+                                  :username-registered-user)
+                      users)
+            :returning [:username-registered-user]}
+           sql-format
+           (jdbc/execute! ds)
+           (map :many_session_has_many_user/username_registered_user)))))

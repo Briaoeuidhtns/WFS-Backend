@@ -119,4 +119,15 @@ If the id is empty uses auth information to get the current user"
        :resolve :mutation/rate-recipe}
     :start-session
       {:type :Session
-       :resolve :mutation/start-session}}}
+       :args {:initial-users
+                {:type (list (non-null String))
+                 :description "The users to initially invite to the session."}}
+       :resolve :mutation/start-session}
+    :session-inv-users
+      {:type :Session
+       :args {:session {:type (non-null Int)
+                        :description "The id of the session to modify"}
+              :users
+                {:type (non-null (list (non-null String)))
+                 :description "The users to invite to the session."}}
+       :resolve :mutation/session-inv}}}
