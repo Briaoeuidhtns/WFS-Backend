@@ -12,6 +12,7 @@
   nilenso/honeysql-postgres {:mvn/version "0.2.6"},
   buddy/buddy-hashers {:mvn/version "1.4.0"},
   seancorfield/next.jdbc {:mvn/version "1.0.462"},
+  com.fzakaria/slf4j-timbre {:mvn/version "0.3.19"},
   com.taoensso/timbre {:mvn/version "4.11.0-alpha1"},
   com.taoensso/nippy {:mvn/version "2.15.0-alpha10"},
   buddy/buddy-auth {:mvn/version "2.2.0"},
