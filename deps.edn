@@ -5,7 +5,7 @@
   com.zaxxer/HikariCP {:mvn/version "3.4.5"},
   expound/expound {:mvn/version "0.8.4"},
   tick/tick {:mvn/version "0.4.23-alpha"},
-  com.walmartlabs/lacinia-pedestal {:mvn/version "0.13.0"},
+  com.walmartlabs/lacinia-pedestal {:mvn/version "0.14.0-alpha-2"},
   honeysql/honeysql {:mvn/version "1.0.444"},
   slingshot/slingshot {:mvn/version "0.12.2"},
   com.stuartsierra/component {:mvn/version "1.0.0"},
