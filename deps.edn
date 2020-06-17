@@ -40,15 +40,6 @@
   :uberjar
   {:extra-deps {luchiniatwork/cambada {:mvn/version "1.0.2"}},
    :main-opts ["-m" "cambada.uberjar" "-m" "wfs.core"]},
-  :outdated
-  {:extra-deps {olical/depot {:mvn/version "1.8.4"}},
-   :main-opts ["-m" "depot.outdated.main"]},
-  :add
-  {:extra-deps
-   {find-deps
-    {:git/url "https://github.com/holyjak/find-deps.git",
-     :sha "88d60faf0db23cf4e2f8155ca82ae49fc6dea164"}},
-   :main-opts ["-m" "find-deps.core" "-Fsave"]},
   :keygen
   {:extra-deps {net.i2p.crypto/eddsa {:mvn/version "0.3.0"}},
    :main-opts ["-m" "keygen" "./resources/"]}}}
