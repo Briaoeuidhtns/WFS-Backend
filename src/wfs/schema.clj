@@ -13,12 +13,12 @@
    [wfs.db.query :as q]
    [wfs.auth.user :as user]
    [wfs.db.mutations :as mut]
+   [wfs.subscriptions.dispatch :as dispatch]
+   [wfs.subscriptions.streamers :as stream]
    [wfs.util :refer [deep-merge-with edn-resource]]))
 
 (def ^:private bad-auth
-  (resolve/with-error nil
-                      {:message
-                         "No valid authentication found"}))
+  (resolve/with-error nil {:message "No valid authentication found"}))
 
 (defn unqualified
   "me irl"
@@ -49,10 +49,7 @@
       (q/user-by-id db id)
       bad-auth)))
 
-(defn User->recipes
-  [db]
-  (fn [_ _ user]
-    (q/recipes-by-user db user)))
+(defn User->recipes [db] (fn [_ _ user] (q/recipes-by-user db user)))
 
 (defn User->sessions
   [db]
@@ -64,10 +61,7 @@
                            ::required req-name
                            ::authorized-for auth-name}))))
 
-(defn Session->users
-  [db]
-  (fn [_ _ session]
-    (q/users-by-session db session)))
+(defn Session->users [db] (fn [_ _ session] (q/users-by-session db session)))
 
 (defn Session->RecipesConnection
   [db]
@@ -90,9 +84,7 @@
 
 (defn start-session
   [db]
-  (fn [{user ::user/identity}
-       {initial-users? :initial_users}
-       _]
+  (fn [{user ::user/identity} {initial-users? :initial_users} _]
     (or (some-> user
                 (->> (mut/start-session db))
                 ((fn [ses-id]
@@ -103,15 +95,17 @@
         bad-auth)))
 
 (defn session-inv
-  [db]
-  (fn [{user ::user/identity}
-       {:keys [users session]}
-       _]
-    (if user (mut/session-inv db user session users))
-    bad-auth))
+  [db sub]
+  (fn [{user ::user/identity} {:keys [users session]} _]
+    (if user
+      (if-let [invited (mut/session-inv db user session users)]
+        (let [ret-session (q/session-by-id db session)]
+          (dispatch/invite sub user invited ret-session)
+          ret-session))
+      bad-auth)))
 
 (defn resolver-map
-  [{:keys [db]}]
+  [{:keys [db sub]}]
   {:query/recipe-by-id (recipe-by-id db)
    :query/user-by-id (user-by-id db)
    :query/session-by-id (session-by-id db)
@@ -122,10 +116,11 @@
    :mutation/yoink-recipe (constantly nil)
    :mutation/rate-recipe (constantly nil)
    :mutation/start-session (start-session db)
-   :mutation/session-inv (session-inv db)
-
+   :mutation/session-inv (session-inv db sub)
    :query/signed (signed db)
    :mutation/register-user (register-user db)})
+
+(defn streamer-map [{:keys [sub]}] #:stream{:invites (stream/invites sub)})
 
 (defn keys->gql
   [schema]
@@ -139,29 +134,25 @@
 
 (defn load-schema
   [component]
-  (let [slices  (map edn-resource '("wfs-schema.edn" "auth-schema.edn"))
+  (let [slices (map edn-resource '("wfs-schema.edn" "auth-schema.edn"))
         combine (partial deep-merge-with
                          (fn [& vals]
                            (throw+ {:type ::duplicate-keys :keys vals})
                            "Duplicate keys in schema"))
-        schema  (apply combine slices)]
+        schema (apply combine slices)]
     (-> schema
         keys->gql
         (util/attach-resolvers (resolver-map component))
+        (util/attach-streamers (streamer-map component))
         schema/compile)))
 
 (defrecord SchemaProvider [schema]
-
   component/Lifecycle
-
-    (start [self]
-      (assoc self :schema (load-schema self)))
-
-    (stop [self]
-      (assoc self :schema nil)))
+    (start [self] (assoc self :schema (load-schema self)))
+    (stop [self] (assoc self :schema nil)))
 
 (defn new-schema-provider
   []
   {:schema-provider (-> {}
                         map->SchemaProvider
-                        (component/using [:db]))})
+                        (component/using [:db :sub]))})

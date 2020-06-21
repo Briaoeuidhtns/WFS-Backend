@@ -70,7 +70,9 @@
              :description "A cursor to the first edge of this page."}
           :end-cursor
             {:type (non-null ID)
-             :description "A cursor to the last edge of this page."}}}}
+             :description "A cursor to the last edge of this page."}}}
+    :Invite {:fields {:from {:type (non-null String)}
+                      :session {:type (non-null :Session)}}}}
  :queries
    {:recipe
       {:type :Recipe
@@ -90,6 +92,10 @@ If the id is empty uses auth information to get the current user"
        :description "Select a Session by it's unique id, if it exists."
        :args {:id {:type (non-null Int)}}
        :resolve :query/session-by-id}}
+ :subscriptions
+   {:invites {:type :Invite
+              :args {:claim {:type String}} ; TODO claim through auth headers
+              :stream :stream/invites}}
  :mutations
    {:yoink-recipe
       {:type :Recipe

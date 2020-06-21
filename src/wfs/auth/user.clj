@@ -29,8 +29,7 @@
   (let [u (s/conform ::new-user user)]
     ()
     (if (= u ::s/invalid)
-      (throw+ {:type ::invalid-user
-               :spec-data (s/explain-data ::new-user user)}
+      (throw+ {:type ::invalid-user :spec-data (s/explain-data ::new-user user)}
               "Invalid user config")
       (update u :password hashers/encrypt))))
 
@@ -40,16 +39,17 @@
                           :username
                           (q/user-creds db)
                           :password)
-        attempt-pw   (:password attempt)]
-    (cond
-      (not good-pw-hash) (throw+ {:type ::does-not-exist}
-                                 "Can't find the requested user")
-      (hashers/check attempt-pw good-pw-hash) (dissoc attempt :password)
-      :default (throw+ {:type ::invalid-password}
-                       "Password does not match hash"))))
+        attempt-pw (:password attempt)]
+    (cond (not good-pw-hash) (throw+ {:type ::does-not-exist}
+                                     "Can't find the requested user")
+          (hashers/check attempt-pw good-pw-hash) (dissoc attempt :password)
+          :default (throw+ {:type ::invalid-password}
+                           "Password does not match hash"))))
 
 (defn token
   [db creds]
   (let [claim (claim db creds)
-        exp   (t/+ (t/now) (t/new-duration 1 :hours))]
+        exp (t/+ (t/now) (t/new-duration 1 :hours))]
     (jwt/sign claim privkey {:alg :eddsa :exp exp})))
+
+(defn unsign [msg] (jwt/unsign msg pubkey {:alg :eddsa}))
