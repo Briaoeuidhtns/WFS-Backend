@@ -6,7 +6,7 @@
    [com.stuartsierra.component :as component]
    com.walmartlabs.lacinia.expound
    [com.walmartlabs.lacinia :as lacinia]
-   [com.walmartlabs.lacinia.pedestal :as lp]
+   [com.walmartlabs.lacinia.pedestal2 :as lp]
    [expound.alpha :as expound]
    [honeysql-postgres.format :refer :all]
    [honeysql-postgres.helpers :as psqlh]
@@ -17,27 +17,20 @@
    [next.jdbc.specs :as specs]
    [wfs.db.query :as db]
    [wfs.schema :as schema]
-   [wfs.system :as system])
-  (:import (clojure.lang IPersistentMap)))
+   [wfs.system :as system]
+   [wfs.test.util :refer [simplify]]
+   [clojure.core.async :refer [<! >! <!! >!! go] :as a])
+  (:import
+   (clojure.lang IPersistentMap)))
 
-(defn simplify
-  "Converts all ordered maps nested within the map into standard hash maps, and
-   sequences into vectors, which makes for easier constants in the tests, and eliminates ordering problems."
-  [m]
-  (walk/postwalk
-   (fn [node]
-     (cond
-       (instance? IPersistentMap node)
-       (into {} node)
 
-       (seq? node)
-       (vec node)
 
-       :else
-       node))
-   m))
+(defrecord Started [started]
+  component/Lifecycle
+    (start [self] (assoc self :started true))
+    (stop [self] (assoc self :started nil)))
 
-(defonce system (system/new-system))
+(defonce system (atom {}))
 
 (defn q
   [query-string]
@@ -49,14 +42,16 @@
 
 (defn start!
   []
-  (alter-var-root #'system component/start-system)
-  (browse-url "http://localhost:8888/")
+  (swap! system component/start-system)
+  (browse-url "http://localhost:8888/ide")
   :started)
 
-(defn stop!
+(defn stop! [] (swap! system component/stop-system) :stopped)
+
+(defn new-system!
   []
-  (alter-var-root #'system component/stop-system)
-  :stopped)
+  (when (get-in @system [:status :started]) (stop!))
+  (reset! system (assoc (system/new-system) :status (map->Started {}))))
 
 (specs/instrument)
 
