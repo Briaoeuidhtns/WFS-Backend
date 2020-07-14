@@ -1,10 +1,10 @@
 (ns user
   (:require
+   [clojure.core.async :refer [<! >! <!! >!! go] :as a]
    [clojure.java.browse :refer [browse-url]]
    [clojure.spec.alpha :as s]
    [clojure.walk :as walk]
    [com.stuartsierra.component :as component]
-   com.walmartlabs.lacinia.expound
    [com.walmartlabs.lacinia :as lacinia]
    [com.walmartlabs.lacinia.pedestal2 :as lp]
    [expound.alpha :as expound]
@@ -19,9 +19,7 @@
    [wfs.schema :as schema]
    [wfs.system :as system]
    [wfs.test.util :refer [simplify]]
-   [clojure.core.async :refer [<! >! <!! >!! go] :as a])
-  (:import
-   (clojure.lang IPersistentMap)))
+   [com.walmartlabs.lacinia.expound]))
 
 
 

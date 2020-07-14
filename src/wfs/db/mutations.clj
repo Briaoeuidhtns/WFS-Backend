@@ -1,14 +1,13 @@
 (ns wfs.db.mutations
   (:require
    [honeysql.core :as sql]
-   [honeysql-postgres.format :refer :all]
+   [honeysql-postgres.format]
    [next.jdbc :as jdbc]
    [wfs.db.system :refer [sql-format]]))
 
 (defn add-user
   [self user]
-  (->> {:insert-into :registered-user
-        :values [user]}
+  (->> {:insert-into :registered-user :values [user]}
        sql-format
        (jdbc/execute-one! (:ds self))
        ::jdbc/update-count
@@ -46,19 +45,18 @@
   [{:keys [ds]} {auth-user :username} session users]
   (let [authzd?
         (->>
-          {:select [(sql/call
-                      :exists
-                      {:select [1]
-                       :from [:many-session-has-many-user]
-                       :where
-                         [:and
-                          [:=
-                           :many-session-has-many-user/session-id-session
-                           session]
-                          [:=
-                           :many-session-has-many-user/username-registered-user
-                           auth-user]]
-                       :limit 1})]}
+          {:select
+             [(sql/call
+                :exists
+                {:select [1]
+                 :from [:many-session-has-many-user]
+                 :where
+                   [:and
+                    [:= :many-session-has-many-user/session-id-session session]
+                    [:=
+                     :many-session-has-many-user/username-registered-user
+                     auth-user]]
+                 :limit 1})]}
           sql-format
           (jdbc/execute-one! ds)
           :exists)]

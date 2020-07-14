@@ -1,14 +1,13 @@
 (ns wfs.subscriptions.streamers
   (:require
    [clojure.core.async :as a :refer [<!]]
-   [wfs.auth.user :as user]
    [taoensso.timbre :as log]
    [slingshot.slingshot :refer [throw+]]
    [wfs.auth.user :as auth]))
 
 (defn invites
   [{:keys [pub]}]
-  (fn [{{auth-user :username} ::user/identity} {arg-user :claim} handle]
+  (fn [{{auth-user :username} ::auth/identity} {arg-user :claim} handle]
     (let [user (or (:username (auth/unsign arg-user)) auth-user)]
       (when-not user
         (throw+ {:type :unauthorized
@@ -17,7 +16,7 @@
             ch (a/chan (a/sliding-buffer 5))] ; Super arbitrary
         (a/sub pub tag ch)
         (a/go-loop []
-                   (let [{:keys [payload] :as ob} (<! ch)]
+                   (let [{:keys [payload]} (<! ch)]
                      (log/debug "Sending" user payload)
                      (handle payload)
                      (recur)))

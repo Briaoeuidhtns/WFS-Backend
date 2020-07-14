@@ -9,7 +9,6 @@
    [com.walmartlabs.lacinia.schema :as schema]
    [com.walmartlabs.lacinia.util :as util]
    [slingshot.slingshot :refer [throw+]]
-   [taoensso.timbre :as t]
    [wfs.db.query :as q]
    [wfs.auth.user :as user]
    [wfs.db.mutations :as mut]
@@ -98,7 +97,7 @@
   [db sub]
   (fn [{user ::user/identity} {:keys [users session]} _]
     (if user
-      (if-let [invited (mut/session-inv db user session users)]
+      (when-let [invited (mut/session-inv db user session users)]
         (let [ret-session (q/session-by-id db session)]
           (dispatch/invite sub user invited ret-session)
           ret-session))

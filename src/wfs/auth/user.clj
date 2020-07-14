@@ -1,15 +1,12 @@
 (ns wfs.auth.user
+  (:refer-clojure :exclude [new])
   (:require
-   [buddy.auth.backends :as backends]
-   [buddy.auth.middleware :refer [wrap-authentication]]
    [buddy.core.keys :as keys]
    [buddy.hashers :as hashers]
    [buddy.sign.jwt :as jwt]
-   [camel-snake-kebab.extras :refer [transform-keys]]
    [com.gfredericks.schpec :as sch]
    [clojure.spec.alpha :as s]
    [slingshot.slingshot :refer [throw+]]
-   [taoensso.timbre :refer []]
    [tick.alpha.api :as t]
    [wfs.util :refer [edn-resource]]
    [wfs.db.query :as q]))
@@ -43,8 +40,8 @@
     (cond (not good-pw-hash) (throw+ {:type ::does-not-exist}
                                      "Can't find the requested user")
           (hashers/check attempt-pw good-pw-hash) (dissoc attempt :password)
-          :default (throw+ {:type ::invalid-password}
-                           "Password does not match hash"))))
+          :else (throw+ {:type ::invalid-password}
+                        "Password does not match hash"))))
 
 (defn token
   [db creds]

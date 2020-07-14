@@ -1,35 +1,26 @@
 (ns wfs.db.query
   (:require
-   [com.stuartsierra.component :as component]
    [next.jdbc :as jdbc]
    [next.jdbc.result-set :as result-set]
    [honeysql.core :as sql]
-   [honeysql.helpers :refer [] :as helpers]
-   [honeysql-postgres.format :refer :all]
-   [honeysql-postgres.helpers :as psqlh]
+   [honeysql-postgres.format]
    [taoensso.timbre :as t]
-   [wfs.base64 :refer [b64->str str->b64]]
+   [wfs.base64 :refer [str->b64]]
    [wfs.db.system :refer [sql-format]]))
 
 (def ^:private recipe-base
-  {:select [[:recipe/recipe-id :id]
-            :recipe/name
-            :recipe/description
-            :recipe/image]
+  {:select
+     [[:recipe/recipe-id :id] :recipe/name :recipe/description :recipe/image]
    :from [:recipe]})
 
 (def ^:private session-base
   {:select [[:session/session-id :id]
-            [(sql/call
-               :+
-               :session/updated-at
-               (sql/inline "INTERVAL '1 hour'"))
+            [(sql/call :+ :session/updated-at (sql/inline "INTERVAL '1 hour'"))
              :expires]]
    :from [:session]})
 
 (def ^:private user-base
-  {:select [:registered-user/username
-            :registered-user/name]
+  {:select [:registered-user/username :registered-user/name]
    :from [:registered-user]})
 
 (def ^:private opts {:builder-fn result-set/as-unqualified-maps})
@@ -67,14 +58,14 @@
 (defn recipes-by-user
   [self user]
   (as-> recipe-base $
-    (sql/build
-      $
-      :join [:many-user-has-many-recipe
-             [:= :recipe/recipe-id :many-user-has-many-recipe/recipe-id-recipe]]
-      :where
-        [:=
-         :many-user-has-many-recipe/username-registered-user
-         (:username user)])
+    (sql/build $
+               :join [:many-user-has-many-recipe
+                      [:=
+                       :recipe/recipe-id
+                       :many-user-has-many-recipe/recipe-id-recipe]]
+               :where [:=
+                       :many-user-has-many-recipe/username-registered-user
+                       (:username user)])
     (sql-format $)
     (jdbc/execute! (:ds self) $ opts)))
 

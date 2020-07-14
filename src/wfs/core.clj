@@ -1,5 +1,3 @@
-(ns wfs.core
-  (:gen-class))
+(ns wfs.core (:gen-class))
 
-(defn -main [& args]
-  (println "Hello World!"))
+(defn -main [& _args] (println "Hello World!"))
