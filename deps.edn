@@ -3,22 +3,22 @@
  {buddy/buddy-core {:mvn/version "1.6.0"},
   org.clojure/clojure {:mvn/version "1.10.1"},
   com.zaxxer/HikariCP {:mvn/version "3.4.5"},
-  expound/expound {:mvn/version "0.8.4"},
-  tick/tick {:mvn/version "0.4.23-alpha"},
-  com.walmartlabs/lacinia-pedestal {:mvn/version "0.14.0-alpha-2"},
+  expound/expound {:mvn/version "0.8.5"},
+  tick/tick {:mvn/version "0.4.26-alpha"},
+  com.walmartlabs/lacinia-pedestal {:mvn/version "0.14.0"},
   honeysql/honeysql {:mvn/version "1.0.444"},
   slingshot/slingshot {:mvn/version "0.12.2"},
   com.stuartsierra/component {:mvn/version "1.0.0"},
   nilenso/honeysql-postgres {:mvn/version "0.2.6"},
   buddy/buddy-hashers {:mvn/version "1.4.0"},
-  seancorfield/next.jdbc {:mvn/version "1.0.462"},
+  seancorfield/next.jdbc {:mvn/version "1.1.569"},
   com.fzakaria/slf4j-timbre {:mvn/version "0.3.19"},
   com.taoensso/timbre {:mvn/version "4.11.0-alpha1"},
-  com.taoensso/nippy {:mvn/version "2.15.0-alpha10"},
+  com.taoensso/nippy {:mvn/version "2.15.0-RC1"},
   buddy/buddy-auth {:mvn/version "2.2.0"},
   com.gfredericks/schpec {:mvn/version "0.1.2"},
   buddy/buddy-sign {:mvn/version "3.1.0"},
-  org.clojure/test.check {:mvn/version "1.0.0"},
+  org.clojure/test.check {:mvn/version "1.1.0"},
   camel-snake-kebab/camel-snake-kebab {:mvn/version "0.4.1"},
   com.impossibl.pgjdbc-ng/pgjdbc-ng {:mvn/version "0.8.4"}},
  :mvn/repos
@@ -26,19 +26,18 @@
   "clojars" {:url "https://repo.clojars.org/"}},
  :aliases
  {:dev
-  {:extra-paths ["dev-resources"],
-   :extra-deps {datawalk/datawalk {:mvn/version "0.1.12"}}},
+  {:extra-paths ["dev-resources"]}
   :run {:main-opts ["-m" "wfs.core"]},
   :test
   {:extra-paths ["test"],
    :extra-deps
-   {lambdaisland/kaocha {:mvn/version "1.0.632"},
+   {lambdaisland/kaocha {:mvn/version "1.0.641"},
     lambdaisland/kaocha-cloverage {:mvn/version "1.0-45"},
     org.testcontainers/testcontainers {:mvn/version "1.14.3"},
     org.testcontainers/postgresql {:mvn/version "1.14.3"}},
    :main-opts ["-m" "kaocha.runner"]},
   :uberjar
-  {:extra-deps {luchiniatwork/cambada {:mvn/version "1.0.2"}},
+  {:extra-deps {cambada {:mvn/version "1.0.7"}},
    :main-opts ["-m" "cambada.uberjar" "-m" "wfs.core"]},
   :keygen
   {:extra-deps {net.i2p.crypto/eddsa {:mvn/version "0.3.0"}},
